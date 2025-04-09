@@ -13,6 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Colors } from '../../utils/colors';
 import DashboardNavigator from './dashboard';
+import ColdmailerNavigator from './coldMailer';
 
 const Tab = createBottomTabNavigator();
 
@@ -45,7 +46,7 @@ export default function MainApp() {
             />
 
             <Tab.Screen
-                name={Routes.app.coldMailer.tag} component={OverviewScreen}
+                name={Routes.app.coldMailer.tag} component={ColdmailerNavigator}
                 options={({ navigation }) => ({
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="mail" color={color} size={size} />

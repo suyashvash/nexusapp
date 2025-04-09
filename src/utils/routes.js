@@ -22,7 +22,7 @@ export const Routes = {
 
         coldMailer: {
             tag: 'coldMailer',
-            form: 'Cold mailer Form',
+            form: 'Cold mailer',
             results: 'Cold mailer Results',
         }
 

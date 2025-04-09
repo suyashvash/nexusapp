@@ -28,7 +28,13 @@ function DashboardNavigator() {
                 })}
                 component={OverviewScreen} />
             <DashboardStack.Screen name={Routes.app.dashboard.card.create} component={CreateCardScreen} />
-            <DashboardStack.Screen name={Routes.app.dashboard.card.detail} component={CardDetailScreen} />
+            <DashboardStack.Screen 
+            name={Routes.app.dashboard.card.detail} 
+            options={{
+                headerTitle:''
+            }}
+            
+            component={CardDetailScreen} />
         </DashboardStack.Navigator>
     );
 }
