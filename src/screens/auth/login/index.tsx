@@ -4,7 +4,7 @@ import {
     SafeAreaView,
     View,
     Text,
-    TextInput,
+    Image,
     TouchableOpacity,
     StyleSheet,
     Alert,
@@ -16,7 +16,7 @@ import PrimaryButton from '../../../components/buttons/primary';
 import { Routes } from '../../../utils/routes';
 import { Colors } from '../../../utils/colors';
 import { useAxios } from '../../../hooks/api/useAxios';
-import { ApiCollection } from '../../../configs/envConfig';
+import Logo from '../../../assets/logo.png'
 
 
 interface LoginForm {
@@ -33,31 +33,40 @@ const LoginScreen = ({ navigation }: any) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async () => {
-        if (email.trim() == '') {
-            Alert.alert('Email is required');
-            return;
-        }
+        // if (email.trim() == '') {
+        //     Alert.alert('Email is required');
+        //     return;
+        // }
 
-        if (password.trim() == '') {
-            Alert.alert('Password is required');
-            return;
-        }
+        // if (password.trim() == '') {
+        //     Alert.alert('Password is required');
+        //     return;
+        // }
 
-        await axios.post(ApiCollection.auth.login, { email, password })
-            .then((res) => {
-                console.log(res.data)
-            })
-            .catch((err) => {
-                console.log(err)
-                Alert.alert('Invalid Credentials')
-            })
+        // await axios.post(ApiCollection.auth.login, { email, password })
+        //     .then((res) => {
+        //         console.log(res.data)
+        //     })
+        //     .catch((err) => {
+        //         console.log(err)
+        //         Alert.alert('Invalid Credentials')
+        //     })
+
+        navigation.replace(Routes.app.tag);
     };
 
     return (
         <SafeAreaView style={styles.container}>
             {/* <LoadingModal modalVisible={isLoading} color={Colors.primary} /> */}
             <Pressable style={styles.formContainer} onPress={() => Keyboard.dismiss()}>
-                <Text style={styles.title}>👋🏻 Welcome Back !</Text>
+
+                <Image
+                    source={Logo}
+                    style={{ width: 250, height: 100 }}
+                    resizeMode='contain'
+                />
+                <Text style={{marginBottom:40}}>Making Job Hunt Efficient !</Text>
+                    
 
                 <AppTextInput
                     label="Email"
@@ -90,7 +99,7 @@ const LoginScreen = ({ navigation }: any) => {
 
                     <TouchableOpacity onPress={() => navigation.navigate(Routes.auth.register)}>
                         <Text style={[styles.link, { color: 'gray' }]}>
-                            Don't have an account ? <Text style={{ color: Colors.primary, fontWeight: 'bold' }}>Sign Up</Text>
+                            Don't have an account ? <Text style={{ color: Colors.accent, fontWeight: 'bold' }}>Sign Up</Text>
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -133,7 +142,6 @@ const styles = StyleSheet.create({
     loginButton: {
         backgroundColor: Colors.primary,
         padding: 15,
-        borderRadius: 50,
         marginTop: 20,
     },
     buttonText: {
@@ -148,7 +156,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     link: {
-        color: Colors.primary,
+        color: Colors.accent,
         fontSize: 14,
     },
 });

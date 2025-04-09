@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import { View, TextInput,Text, TextInputProps, Platform } from 'react-native';
+import { Colors } from '../../utils/colors';
 
 interface AppTextInputProps {
     label: string;
@@ -29,11 +30,11 @@ export default function AppTextInput(props: AppTextInputProps) {
             }}>
             <Text
                 style={{
-                    color: 'gray',
                     fontSize: 14,
                     position: 'absolute',
                     top: -10,
-                  
+                    color:'gray',
+                    fontWeight: 'bold',
                     marginLeft: 10,
                     backgroundColor: 'white',
                     paddingHorizontal: 10,

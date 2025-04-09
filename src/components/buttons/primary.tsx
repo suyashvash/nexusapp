@@ -29,7 +29,7 @@ const PrimaryButton: React.FC<ButtonProps> = ({ title, onPress, style, variant =
 const styles = StyleSheet.create({
   button: {
     backgroundColor: Colors.primary,
-    borderRadius: 8,
+    borderRadius: 10,
     padding: 10,
     alignItems: 'center',
     width: '100%',

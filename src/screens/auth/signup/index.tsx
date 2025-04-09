@@ -4,6 +4,7 @@ import {
     SafeAreaView,
     View,
     Text,
+    Image,
     TouchableOpacity,
     StyleSheet,
     Alert,
@@ -16,7 +17,7 @@ import { Colors } from '../../../utils/colors';
 import { Routes } from '../../../utils/routes';
 import { useAxios } from '../../../hooks/api/useAxios';
 import { ApiCollection } from '../../../configs/envConfig';
-
+import Logo from '../../../assets/logo.png'
 
 interface SignupForm {
     name: string;
@@ -79,8 +80,12 @@ const SignupScreen = ({ navigation }: any) => {
         <SafeAreaView style={styles.container}>
           
             <Pressable style={styles.formContainer} onPress={() => Keyboard.dismiss()}>
-                <Text style={styles.title}>Create Account 🚀</Text>
-
+                      <Image
+                                    source={Logo}
+                                    style={{ width: 250, height: 100 }}
+                                    resizeMode='contain'
+                                />
+                                <Text style={{marginBottom:40}}>Signup & Start using the app !</Text>
                 <AppTextInput
                     label="Full Name"
                     placeholder='John Doe'
@@ -114,7 +119,7 @@ const SignupScreen = ({ navigation }: any) => {
                 />
 
                 <PrimaryButton
-                    title="Submit"
+                    title="Create Account"
                     onPress={handleSubmit}
                     style={styles.signupButton}
                 />
@@ -151,7 +156,6 @@ const styles = StyleSheet.create({
     signupButton: {
         backgroundColor: Colors.primary,
         padding: 15,
-        borderRadius: 50,
         marginTop: 20,
     },
     linksContainer: {
