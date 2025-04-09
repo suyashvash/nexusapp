@@ -5,18 +5,10 @@ import { ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../../../../utils/colors';
+import Card from '../../../../components/card';
 
-const Card = ({ name, title, views, onClick }: any) => (
-    <TouchableOpacity onPress={onClick}>
-        <ImageBackground style={styles.cardContainer} src='https://t4.ftcdn.net/jpg/04/89/68/23/360_F_489682374_ckc0OVyT6Av0NGcuYbwBSCxy62blF4CQ.jpg'>
-            <Image source={{ uri: 'https://api.dicebear.com/9.x/notionists/png?seed=batss' }} style={styles.cardImage} />
-            <Text style={styles.cardName}>{name}</Text>
-            <Text style={styles.cardTitle}>{title}</Text>
-        </ImageBackground>
-    </TouchableOpacity>
-);
 
-const DashboardScreen = ({ navigation }) => {
+const OverviewScreen = ({ navigation }) => {
     const cards = [
         { id: '1', name: 'Suyash Vashishtha', title: 'Swift UI Developer' },
         { id: '2', name: 'John Doe', title: 'React Native Developer' },
@@ -45,12 +37,13 @@ const DashboardScreen = ({ navigation }) => {
                 style={{ padding: 10, paddingTop: 0, width: '95%' }}
             >
                 {
-                    cards.map((card) => (
+                    cards.map((card, index) => (
                         <Card
                             key={card.id}
                             name={card.name}
+                            style={index == cards.length - 1 ? { marginRight: 30 } : {}}
                             title={card.title}
-                        // onClick={() => { navigation.navigate(Routes.app.cardDetails) }}
+                            onClick={() => { navigation.navigate(Routes.app.dashboard.card.detail) }}
                         />
                     ))
                 }
@@ -82,19 +75,19 @@ const DashboardScreen = ({ navigation }) => {
                     <MaterialIcons name="ads-click" size={22} color={Colors.accent} />
                     <Text style={styles.analyticsLabel}>Card Clicks</Text>
                     <Text style={styles.analyticsValue}>50</Text>
-         
+
                 </View>
                 <View style={styles.analyticsBox}>
-                <MaterialIcons name="download" size={22} color={Colors.accent} />
+                    <MaterialIcons name="download" size={22} color={Colors.accent} />
                     <Text style={styles.analyticsLabel}>Resume Downloads</Text>
                     <Text style={styles.analyticsValue}>20</Text>
-                 
+
                 </View>
                 <View style={styles.analyticsBox}>
                     <AntDesign name="link" size={22} color={Colors.accent} />
                     <Text style={styles.analyticsLabel}>Projects Viewed</Text>
                     <Text style={styles.analyticsValue}>10</Text>
-            
+
                 </View>
             </View>
 
@@ -116,7 +109,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         borderColor: 'black',
         borderWidth: 1,
-        backgroundColor:'black'
+        backgroundColor: 'black'
     },
     profileName: {
         fontSize: 20,
@@ -132,34 +125,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginVertical: 10,
-    },
-    cardContainer: {
-        width: 300,
-        height: 200,
-        backgroundColor: '#F0F0F0',
-        borderRadius: 10,
-        marginHorizontal: 5,
-        alignItems: 'flex-start',
-        justifyContent: 'flex-end',
-        padding: 10,
-        marginVertical: 10,
-        overflow: 'hidden',
-    },
-    cardImage: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginBottom: 8,
-    },
-    cardName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: "white",
-        marginBottom: 4,
-    },
-    cardTitle: {
-        fontSize: 14,
-        color: 'lightgray',
     },
     analyticsContainer: {
         flexDirection: 'row',
@@ -207,4 +172,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DashboardScreen;
+export default OverviewScreen;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Routes } from '../../../utils/routes';
-import DashboardScreen from './landing';
-import CreateCardScreen from './card/create';
+import OverviewScreen from './overview';
+import { CreateCardScreen,CardDetailScreen } from './card';
 import { Text, TouchableOpacity } from 'react-native';
 
 const DashboardStack = createStackNavigator();
@@ -26,8 +26,9 @@ function DashboardNavigator() {
                         </TouchableOpacity>
                     ),
                 })}
-                component={DashboardScreen} />
+                component={OverviewScreen} />
             <DashboardStack.Screen name={Routes.app.dashboard.card.create} component={CreateCardScreen} />
+            <DashboardStack.Screen name={Routes.app.dashboard.card.detail} component={CardDetailScreen} />
         </DashboardStack.Navigator>
     );
 }

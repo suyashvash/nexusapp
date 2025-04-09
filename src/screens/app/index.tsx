@@ -6,9 +6,9 @@ import { Button } from '@react-navigation/elements';
 import { Routes } from '../../utils/routes';
 import SignupScreen from '../auth/signup';
 import { createStackNavigator } from '@react-navigation/stack';
-import DashboardScreen from './dashboard/landing';
+import OverviewScreen from './dashboard/overview';
 import CreateCardScreen from './dashboard/card/create';
-import CardDetailScreen from './view';
+import CardDetailScreen from './dashboard/card/view';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Colors } from '../../utils/colors';
@@ -45,7 +45,7 @@ export default function MainApp() {
             />
 
             <Tab.Screen
-                name={Routes.app.coldMailer.tag} component={DashboardScreen}
+                name={Routes.app.coldMailer.tag} component={OverviewScreen}
                 options={({ navigation }) => ({
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="mail" color={color} size={size} />
