@@ -1,18 +1,31 @@
-export const Routes ={
-    auth:{
+export const Routes = {
+    auth: {
         tag: 'auth',
         welcome: 'Welcome',
         login: 'Login',
         register: 'Register',
         forgotPassword: 'Forgot Password',
     },
-    app:{
+    app: {
         tag: 'app',
-        dashboard: 'Dashboard',
-        createCard: 'Create Card',
-        cardDetails: 'Card Details',
-        coldMailer: 'Cold Mailer',
-        coldMailerDetails: 'Cold Mailer Details',
+        dashboard: {
+            tag: 'dashboard',
+            overview: 'Overview',
+            card: {
+                tag: 'card',
+                detail: 'Card Detail',
+                create: 'Create Card',
+                list: 'List Card',
+                edit: 'Edit Card',
+            }
+        },
+
+        coldMailer: {
+            tag: 'coldMailer',
+            form: 'Cold mailer Form',
+            results: 'Cold mailer Results',
+        }
+
 
     }
 }

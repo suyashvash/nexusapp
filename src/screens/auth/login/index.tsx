@@ -65,7 +65,7 @@ const LoginScreen = ({ navigation }: any) => {
                     style={{ width: 250, height: 100 }}
                     resizeMode='contain'
                 />
-                <Text style={{marginBottom:40}}>Making Job Hunt Efficient !</Text>
+                <Text style={{marginBottom:40,color:Colors.accent,fontWeight:'bold'}}>Making Job Hunt Efficient !</Text>
                     
 
                 <AppTextInput

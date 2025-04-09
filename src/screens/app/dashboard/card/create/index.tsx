@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import AppTextInput from '../../../components/input/textinput';
-import PrimaryButton from '../../../components/buttons/primary';
+import AppTextInput from '../../../../../components/input/textinput';
+import PrimaryButton from '../../../../../components/buttons/primary';
 
 const CreateCardScreen = () => {
     const [mainTitle, setMainTitle] = useState('');
