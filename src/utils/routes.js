@@ -24,6 +24,12 @@ export const Routes = {
             tag: 'coldMailer',
             form: 'Cold mailer',
             results: 'Cold mailer Results',
+        },
+
+        analysis:{
+            tag: 'analysisTag',
+            form: 'Score Analysis',
+            results: 'Analysis Results',
         }
 
 

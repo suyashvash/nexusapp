@@ -14,6 +14,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Colors } from '../../utils/colors';
 import DashboardNavigator from './dashboard';
 import ColdmailerNavigator from './coldMailer';
+import ScoreNavigator from './score';
 
 const Tab = createBottomTabNavigator();
 
@@ -40,7 +41,7 @@ export default function MainApp() {
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="home" color={color} size={size} />
                     ),
-                 
+
                 })}
 
             />
@@ -50,6 +51,16 @@ export default function MainApp() {
                 options={({ navigation }) => ({
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="mail" color={color} size={size} />
+                    ),
+                })}
+
+            />
+
+            <Tab.Screen
+                name={Routes.app.analysis.tag} component={ScoreNavigator}
+                options={({ navigation }) => ({
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="pie-chart" color={color} size={size} />
                     ),
                 })}
 
