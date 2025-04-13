@@ -24,14 +24,14 @@ export const Routes = {
 
         coldMailer: {
             tag: 'coldMailer',
-            form: 'Cold mailer',
-            results: 'Cold mailer Results',
+            form: 'AI Mail Generator',
+            results: 'Result',
         },
 
         analysis:{
             tag: 'analysisTag',
-            form: 'Score Analysis',
-            results: 'Analysis Results',
+            form: 'AI Profile Analysis',
+            results: 'Your Analysis',
         },
         
         settings: 'Settings',
