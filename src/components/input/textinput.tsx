@@ -88,6 +88,7 @@ export default function AppTextInput(props: AppTextInputProps) {
                                 borderWidth: 1,
                                 height: props.type === 'paragraph' ? 100 : 50,
                             }}
+                            multiline={props.type === 'paragraph'}
                         secureTextEntry={props.type === 'password'}
                         placeholder={props.placeholder || 'Type here'}
                         placeholderTextColor={'gray'}

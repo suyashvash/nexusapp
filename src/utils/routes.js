@@ -1,3 +1,5 @@
+import { Settings } from "react-native";
+
 export const Routes = {
     auth: {
         tag: 'auth',
@@ -30,7 +32,9 @@ export const Routes = {
             tag: 'analysisTag',
             form: 'Score Analysis',
             results: 'Analysis Results',
-        }
+        },
+        
+        settings: 'Settings',
 
 
     }

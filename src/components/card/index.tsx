@@ -1,29 +1,34 @@
 import React from "react";
 import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import useUser from "../../redux/useStore";
 
 interface CardProps {
-    name: string;
+    name?: string;
     title: string;
     views?: number;
     onClick?: () => void;
     style?:ViewStyle;
 }
 
-const Card = ({ name, title, views, onClick,style }: CardProps) => (
+const Card = ({ name, title, views, onClick,style }: CardProps) => {
+    
+    const user = useUser()
+
+    return(
     <TouchableOpacity onPress={onClick}>
         <ImageBackground style={[styles.cardContainer,style]} src='https://t4.ftcdn.net/jpg/04/89/68/23/360_F_489682374_ckc0OVyT6Av0NGcuYbwBSCxy62blF4CQ.jpg'>
-            <Image source={{ uri: 'https://api.dicebear.com/9.x/notionists/png?seed=batss' }} style={styles.cardImage} />
-            <Text style={styles.cardName}>{name}</Text>
+            <Image source={{ uri: user.profileImage }} style={styles.cardImage} />
+            <Text style={styles.cardName}>{name || user.name}</Text>
             <Text style={styles.cardTitle}>{title}</Text>
         </ImageBackground>
     </TouchableOpacity>
-);
+)};
 
 export default Card;
 
 const styles = StyleSheet.create({
     cardContainer: {
-        width: 300,
+        width: 320,
         height: 200,
         backgroundColor: '#F0F0F0',
         borderRadius: 10,

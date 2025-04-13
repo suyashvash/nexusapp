@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
 import AppTextInput from '../../../../../components/input/textinput';
 import PrimaryButton from '../../../../../components/buttons/primary';
@@ -6,18 +6,46 @@ import Card from '../../../../../components/card';
 import { Colors } from '../../../../../utils/colors';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { pick, types } from '@react-native-documents/picker'
+import { doc, getDoc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
+import useUser from '../../../../../redux/useStore';
+import { User } from '../../../../../redux/slices/userSlice';
+import LoadingModal from 'react-native-loading-modal';
 
-const CreateCardScreen = () => {
+const CreateCardScreen = ({ navigation }) => {
+
+    const db = getFirestore()
+    const user = useUser()
+
+    useEffect(() => {
+        getUserData()
+    }, [])
+
+
     const [mainTitle, setMainTitle] = useState('');
-    const [subtitle, setSubtitle] = useState('');
-    const [mainTitle2, setMainTitle2] = useState('');
+    const [bio, setBio] = useState('');
+    const [mainSkill, setMainSkill] = useState('');
     const [skills, setSkills] = useState('');
     const [projectLinks, setProjectLinks] = useState<string[]>([]);
     const [resume, setResume] = useState<DocumentPickerResponse | null>(null);
+    const [portfolio, setPortfolio] = useState<string>('');
 
-    const handleAddProjectLink = () => {
-        setProjectLinks([...projectLinks, '']);
-    };
+
+    const [isLoading, setIsLoading] = React.useState(false)
+    const [userData, setUserData] = React.useState<User | null>(null)
+
+    const getUserData = async () => {
+
+        const docRef = doc(db, "Users", user.id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists) {
+            console.log("Document data:", docSnap.data());
+            const data = docSnap.data() as User
+            setUserData(data)
+
+        }
+
+    }
 
     const handleSelectResume = async () => {
         pick({
@@ -32,7 +60,7 @@ const CreateCardScreen = () => {
                 }
                 const file = res[0];
                 console.log('Selected file:', file);
-                
+
                 setResume(file);
             })
             .catch((error => {
@@ -42,17 +70,85 @@ const CreateCardScreen = () => {
     }
 
 
-    const handleSubmit = () => {
-        // Handle form submission
+    const handleSubmit = async () => {
+        if (mainTitle == '') {
+            Alert.alert('Create Card', 'Please enter a title for your card');
+            return;
+        }
+
+        if (bio == '') {
+            Alert.alert('Create Card', 'Please enter a subtitle for your card');
+            return;
+        }
+
+        if (mainSkill == '') {
+            Alert.alert('Create Card', 'Please enter a main skill for your card');
+            return;
+        }
+
+        if (skills == '') {
+            Alert.alert('Create Card', 'Please enter skills for your card');
+            return;
+        }
+
+        // if(projectLinks.length==0){
+        //     Alert.alert('Create Card','Please enter project links for your card');
+        //     return;
+        // }
+
+        // if(resume==null){
+        //     Alert.alert('Create Card','Please upload a resume for your card');
+        //     return;
+        // }
+
+        setIsLoading(true)
+
+        let card = {
+            title: mainTitle,
+            bio: bio,
+            mainSkill: mainSkill,
+            skills: skills.split(','),
+            projectLinks: projectLinks,
+            resume: resume,
+            id: new Date().getTime().toString(),
+            portfolio: portfolio,
+        }
+
+
+        let profiles = userData?.profiles
+
+        if (userData?.profiles) {
+            profiles = userData.profiles
+        }
+
+        profiles?.push(card)
+
+        const washingtonRef = doc(db, "Users", user.id);
+        await updateDoc(washingtonRef, {
+            profiles: profiles,
+        })
+            .then(() => {
+                console.log('Document successfully written!');
+                setIsLoading(false)
+                Alert.alert('Create Card', 'Card created successfully!');
+                navigation.goBack()
+            })
+            .catch((error) => {
+                setIsLoading(false)
+                console.error('Error writing document: ', error);
+                Alert.alert('Create Card', 'Error creating card: ' + error.message);
+            })
+
+
     };
 
     return (
         <ScrollView
             contentContainerStyle={styles.container}
         >
-
+            <LoadingModal modalVisible={isLoading} color={Colors.primary} />
             <Card
-                name={'Suyash Vashishtha'}
+                name={userData?.name || user.name}
                 title={mainTitle === '' ? 'Your Title will come here..' : mainTitle}
                 views={100}
                 onClick={() => { }}
@@ -71,15 +167,24 @@ const CreateCardScreen = () => {
             <AppTextInput
                 label='Bio'
                 placeholder="Ex- I am a React Native Developer"
-                value={subtitle}
+                value={bio}
                 type='paragraph'
-                onChangeText={setSubtitle}
+                onChangeText={setBio}
             />
+
+            <AppTextInput
+                label='Portfolio Link'
+                placeholder="Ex- https://example.com"
+                value={portfolio}
+                onChangeText={setPortfolio}
+            />
+
+
             <AppTextInput
                 label='Main Skill'
                 placeholder="Ex- React Native"
-                value={mainTitle2}
-                onChangeText={setMainTitle2}
+                value={mainSkill}
+                onChangeText={setMainSkill}
             />
 
             <AppTextInput
@@ -278,12 +383,12 @@ const CreateCardScreen = () => {
                         <Text>Select File</Text>
                     )
                 }
-         
+
             </TouchableOpacity>
 
 
 
-            <PrimaryButton title='Submit' onPress={handleAddProjectLink} />
+            <PrimaryButton title='Submit' onPress={handleSubmit} />
 
 
 

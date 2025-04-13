@@ -15,6 +15,7 @@ import { Colors } from '../../utils/colors';
 import DashboardNavigator from './dashboard';
 import ColdmailerNavigator from './coldMailer';
 import ScoreNavigator from './score';
+import ProfileScreen from './setting';
 
 const Tab = createBottomTabNavigator();
 
@@ -61,6 +62,16 @@ export default function MainApp() {
                 options={({ navigation }) => ({
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="pie-chart" color={color} size={size} />
+                    ),
+                })}
+
+            />
+
+            <Tab.Screen
+                name={Routes.app.settings} component={ProfileScreen}
+                options={({ navigation }) => ({
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="settings" color={color} size={size} />
                     ),
                 })}
 

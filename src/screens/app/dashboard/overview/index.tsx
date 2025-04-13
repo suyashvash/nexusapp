@@ -10,22 +10,26 @@ import useUser from '../../../../redux/useStore';
 import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 import { User } from '../../../../redux/slices/userSlice';
 import EmptyCard from '../../../../components/card/emptyCard';
+import { useIsFocused } from '@react-navigation/native';
 
 
 const OverviewScreen = ({ navigation }) => {
 
     const user = useUser()
     const db = getFirestore()
+    const isFocused = useIsFocused()
 
     useEffect(() => {
-        getUserData()
-    }, [])
+        if (isFocused) {
+            getUserData()
+        }
+    }, [isFocused])
 
-    const [isLoading, setIsLoading] = React.useState(false)
+    const [isLoading, setIsLoading] = React.useState(true)
     const [userData, setUserData] = React.useState<User | null>(null)
 
     const getUserData = async () => {
-        setIsLoading(true)
+        // setIsLoading(true)
         const docRef = doc(db, "Users", user.id);
         const docSnap = await getDoc(docRef);
 
@@ -37,13 +41,6 @@ const OverviewScreen = ({ navigation }) => {
         }
 
     }
-
-
-    const cards = [
-        { id: '1', name: 'Suyash Vashishtha', title: 'Swift UI Developer' },
-        { id: '2', name: 'John Doe', title: 'React Native Developer' },
-        { id: '3', name: 'Jane Smith', title: 'Backend Developer' },
-    ];
 
     if (isLoading) {
         return (
@@ -69,7 +66,7 @@ const OverviewScreen = ({ navigation }) => {
         >
             <View style={styles.container}>
                 <Image
-                    source={{ uri: `https://api.dicebear.com/9.x/notionists/png?seed=suyassss` }}
+                    source={{ uri: user.profileImage }}
                     style={styles.profileImage}
                 />
                 <Text style={styles.profileName}>{userData.name}</Text>
@@ -80,28 +77,36 @@ const OverviewScreen = ({ navigation }) => {
             </View>
             {
                 userData.profiles.length > 0 ?
-                    <ScrollView
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        style={{ padding: 10, paddingTop: 0, width: '95%' }}
-                    >
-                        {
-                            cards.map((card, index) => (
-                                <Card
-                                    key={card.id}
-                                    name={card.name}
-                                    style={index == cards.length - 1 ? { marginRight: 30 } : {}}
-                                    title={card.title}
-                                    onClick={() => { navigation.navigate(Routes.app.dashboard.card.detail) }}
-                                />
-                            ))
-                        }
+                    userData.profiles.length == 1 ?
+
+                        <View style={{ width: '90%', paddingTop: 0, justifyContent: 'center', alignItems: 'center' }}>
+                            <Card
+                                title={userData.profiles[0].title}
+                                onClick={() => { navigation.navigate(Routes.app.dashboard.card.detail, { id: userData.profiles[0].id }) }}
+                            />
+                        </View>
+                        :
+                        <ScrollView
+                            horizontal={true}
+                            showsHorizontalScrollIndicator={false}
+                            style={{ padding: 5, paddingTop: 0, width: '95%' }}
+                        >
+                            {
+                                userData.profiles.map((card, index) => (
+                                    <Card
+                                        key={card.id || index}
+                                        style={index == userData.profiles.length - 1 ? { marginRight: 30 } : {}}
+                                        title={card.title}
+                                        onClick={() => { navigation.navigate(Routes.app.dashboard.card.detail, { id: card.id }) }}
+                                    />
+                                ))
+                            }
 
 
-                    </ScrollView>
+                        </ScrollView>
                     :
-                    <View style={{ width: '90%',  paddingTop: 0 }}>
-                        <EmptyCard/>
+                    <View style={{ width: '90%', paddingTop: 0 }}>
+                        <EmptyCard />
                     </View>
             }
 

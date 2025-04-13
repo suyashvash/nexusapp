@@ -3,10 +3,11 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // Define types for the user state
 export interface User {
     id: string;
-   name: string;
+    name: string;
     email: string;
     createdAt: Date;
-    profiles: string[]; // Assuming profiles is an array of strings
+    profileImage: string;
+    profiles: any[]; // Assuming profiles is an array of strings
 
 }
 
@@ -27,7 +28,10 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         setActiveUser: (state, action: PayloadAction<User>) => {
-            state.user = action.payload;
+            state.user = {
+                ...action.payload,
+                profileImage: `https://api.dicebear.com/9.x/notionists/png?seed=${action.payload.id}`,
+            };
             state.isLoggedIn = true; // Set isLoggedIn to true when a user is set   
         },
         clearUser: (state) => {
@@ -37,7 +41,7 @@ const userSlice = createSlice({
     },
 });
 
-export const { setActiveUser,clearUser } = userSlice.actions;
+export const { setActiveUser, clearUser } = userSlice.actions;
 export const selectUser = (state: { user: UserState }) => state.user.user;
 export const selectIsLoggedIn = (state: { user: UserState }) => state.user.isLoggedIn;
 export default userSlice.reducer;

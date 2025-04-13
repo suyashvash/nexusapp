@@ -1,22 +1,66 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Linking } from 'react-native';
 import { Colors } from '../../../../../utils/colors';
 import PrimaryButton from '../../../../../components/buttons/primary';
 import Card from '../../../../../components/card';
 import Entypo from 'react-native-vector-icons/Entypo';
+import { User } from '../../../../../redux/slices/userSlice';
+import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
+import useUser from '../../../../../redux/useStore';
 
-const CardDetailScreen = () => {
+const CardDetailScreen = ({ navigation, route }) => {
+
+    const id = route.params.id
+    const db = getFirestore()
+    const user = useUser()
+
+    useEffect(() => {
+        getUserData()
+    }, [])
+
+    const [isLoading, setIsLoading] = React.useState(true)
+    const [userData, setUserData] = React.useState<User | null>(null)
+
+    const getUserData = async () => {
+        setIsLoading(true)
+        const docRef = doc(db, "Users", user.id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists) {
+            console.log("Document data:", docSnap.data());
+            const data = docSnap.data() as User
+            setUserData(data)
+            setIsLoading(false)
+        }
+
+    }
+
+    const thisCard = userData?.profiles.find((card: any) => card.id === id)
 
 
-    const [skills, setSkills] = useState(['React Native', 'Swift UI', 'Java', 'Python', 'Node JS']);
-    const [projects, setProjects] = useState(['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5']);
 
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+                <Text style={{ marginTop: 10, fontSize: 16 }}>Loading...</Text>
+            </View>
+        )
+    }
+
+
+    if (thisCard == undefined) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ marginTop: 10, fontSize: 16 }}>No Profile Found !</Text>
+            </View>
+        )
+    }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Card
-                name={'Suyash Vashishtha'}
-                title={'React Native Developer'}
+                title={thisCard.title}
                 views={100}
                 onClick={() => { }}
                 style={{
@@ -26,19 +70,18 @@ const CardDetailScreen = () => {
             <View style={styles.card}>
                 <View style={{ width: '100%', marginBottom: 20 }}>
                     <Text style={styles.subtitle}>Main Title</Text>
-                    <Text style={styles.mainTitle}>Swift UI Developer</Text>
+                    <Text style={styles.mainTitle}>{thisCard.title}</Text>
                 </View>
 
                 <View style={{ width: '100%', marginBottom: 20 }}>
                     <Text style={styles.subtitle}>Bio</Text>
-                    <Text style={styles.mainTitle}> Hi, I am Swift UI Dev with 3 years working with startups and busines to build scalable apps-hi, I am Swift UI Dev with 3 years working with startups and busines to build scalable apps.</Text>
+                    <Text style={styles.mainTitle}>{thisCard.bio}</Text>
                 </View>
 
                 <View style={{ width: '100%', marginBottom: 20 }}>
                     <Text style={styles.subtitle}>Skills</Text>
 
-                    {
-                        skills.length > 0 &&
+                    {thisCard.skills.length > 0 &&
                         <View
                             style={{
                                 flexDirection: 'row',
@@ -50,7 +93,7 @@ const CardDetailScreen = () => {
                             }}>
 
 
-                            {skills.map((skill, index) => (
+                            {thisCard.skills.map((skill, index) => (
                                 <View key={index} style={{
                                     flexDirection: 'row', alignItems: 'center',
                                     padding: 15,
@@ -69,7 +112,7 @@ const CardDetailScreen = () => {
 
                 </View>
                 {
-                    projects.length > 0 &&
+                    thisCard.projectLinks?.length > 0 &&
                     <View style={{ width: '100%', marginBottom: 20 }}>
                         <Text style={styles.subtitle}>Projects</Text>
 
@@ -81,7 +124,7 @@ const CardDetailScreen = () => {
                             }}>
 
 
-                            {projects.map((skill, index) => (
+                            {thisCard.projectLinks.map((link,index) => (
                                 <TouchableOpacity key={index} style={{
                                     flexDirection: 'row', alignItems: 'center',
                                     width: '100%',
@@ -90,7 +133,12 @@ const CardDetailScreen = () => {
                                     marginRight: 10,
                                     marginBottom: 10,
                                     justifyContent: 'space-between',
-                                }}>
+                                }}
+                                onPress={() => { 
+
+                                    Linking.openURL(link)
+                                }}
+                                >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Entypo name='link' size={22} color={'gray'} />
                                         <Text style={{ marginHorizontal: 10, fontSize: 16, fontWeight: 'semibold' }}>Project {index + 1}</Text>
@@ -104,7 +152,9 @@ const CardDetailScreen = () => {
                     </View>
                 }
 
-                <View style={{ width: '100%', marginBottom: 20 }}>
+                {
+                    thisCard.resume &&
+                    <View style={{ width: '100%', marginBottom: 20 }}>
                     <Text style={styles.subtitle}>Documents</Text>
                     <View
                         style={{
@@ -125,13 +175,17 @@ const CardDetailScreen = () => {
                             <Entypo name='download' style={styles.chevron} />
                         </TouchableOpacity>
                     </View>
+                    </View>
+                }
+
+             
 
 
-                </View>
+            
 
 
                 <PrimaryButton
-                    title="Call Suyash"
+                    title="Share Card"
                     variant='outline'
                     onPress={() => { }}
                     style={{ marginTop: 0 }}
