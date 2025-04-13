@@ -1,15 +1,16 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { Colors } from '../../utils/colors';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  style?: ViewStyle;
+  style?: ViewStyle
   variant?: 'filled' | 'outline';
+  textStyle?: TextStyle
 }
 
-const PrimaryButton: React.FC<ButtonProps> = ({ title, onPress, style, variant = 'filled' }) => {
+const PrimaryButton: React.FC<ButtonProps> = ({ title, onPress, style,textStyle, variant = 'filled' }) => {
   return (
     <TouchableOpacity
       style={[
@@ -19,7 +20,7 @@ const PrimaryButton: React.FC<ButtonProps> = ({ title, onPress, style, variant =
       ]}
       onPress={onPress}
     >
-      <Text style={[styles.buttonText, variant === 'outline' && styles.outlineButtonText]}>
+      <Text style={[styles.buttonText, variant === 'outline' && styles.outlineButtonText,textStyle]}>
         {title}
       </Text>
     </TouchableOpacity>

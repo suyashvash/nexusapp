@@ -12,6 +12,7 @@ import { Image } from "react-native";
 import { Colors } from "../../../../utils/colors";
 import LottieView from 'lottie-react-native';
 import GeneratingModal from "../../../../components/generatingModal";
+import { generateColdMail } from "../../../../configs/openai";
 
 export default function ColdMailerForm({ navigation }: any) {
 
@@ -48,12 +49,12 @@ export default function ColdMailerForm({ navigation }: any) {
 
     const onGenerate = async () => {
 
-        if(jobDescription==''){
+        if (jobDescription == '') {
             Alert.alert('Cold Mailer', 'Please enter job description')
             return
         }
 
-        if(receiverBio==''){
+        if (receiverBio == '') {
             Alert.alert('Cold Mailer', 'Please enter receiver bio')
             return
         }
@@ -64,11 +65,24 @@ export default function ColdMailerForm({ navigation }: any) {
         }
 
         setIsGenerating(true)
-        setTimeout(() => {
-            setIsGenerating(false)
-            
-        }
-            , 2000)
+        await generateColdMail(userData?.profiles[profile], jobDescription, receiverBio)
+            .then((res: any) => {
+                const parsedContent = JSON.parse(res);
+
+                setIsGenerating(false)
+ 
+                navigation.navigate(Routes.app.coldMailer.results, {
+                    result: parsedContent,
+                    jobDescription: jobDescription,
+                })
+
+            })
+
+            .catch((error: any) => {
+                console.error("Error generating email:", error);
+                setIsGenerating(false)
+                Alert.alert('Cold Mailer', 'Error generating email')
+            })
 
     }
 
@@ -85,9 +99,9 @@ export default function ColdMailerForm({ navigation }: any) {
 
             <GeneratingModal
                 isVisible={isGenerating}
-                // onClose={() => setIsGenerating(false)}
-                // title="Generating..."
-                // description="Please wait while we generate your email."
+            // onClose={() => setIsGenerating(false)}
+            // title="Generating..."
+            // description="Please wait while we generate your email."
             />
 
             <AppTextInput

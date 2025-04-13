@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Linking, Share } from 'react-native';
 import { Colors } from '../../../../../utils/colors';
 import PrimaryButton from '../../../../../components/buttons/primary';
 import Card from '../../../../../components/card';
@@ -37,6 +37,16 @@ const CardDetailScreen = ({ navigation, route }) => {
 
     const thisCard = userData?.profiles.find((card: any) => card.id === id)
 
+    const onShareCard = () => {
+        Share.share({
+            message: `Check out my Nexus card to view my professional journey ! \n\n`,
+            title: `${user.name} - ${thisCard?.title}`,
+            url : `https://nexuscard.web.app/card?id=${thisCard?.id}`,
+        })
+            .then((result) => console.log(result))
+            .catch((error) => console.log('Error sharing card:', error));
+
+    }
 
 
     if (isLoading) {
@@ -124,7 +134,7 @@ const CardDetailScreen = ({ navigation, route }) => {
                             }}>
 
 
-                            {thisCard.projectLinks.map((link,index) => (
+                            {thisCard.projectLinks.map((link, index) => (
                                 <TouchableOpacity key={index} style={{
                                     flexDirection: 'row', alignItems: 'center',
                                     width: '100%',
@@ -134,10 +144,10 @@ const CardDetailScreen = ({ navigation, route }) => {
                                     marginBottom: 10,
                                     justifyContent: 'space-between',
                                 }}
-                                onPress={() => { 
+                                    onPress={() => {
 
-                                    Linking.openURL(link)
-                                }}
+                                        Linking.openURL(link)
+                                    }}
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Entypo name='link' size={22} color={'gray'} />
@@ -155,39 +165,45 @@ const CardDetailScreen = ({ navigation, route }) => {
                 {
                     thisCard.resume &&
                     <View style={{ width: '100%', marginBottom: 20 }}>
-                    <Text style={styles.subtitle}>Documents</Text>
-                    <View
-                        style={{
-                            width: '100%',
-                        }}>
-                        <TouchableOpacity style={{
-                            flexDirection: 'row', alignItems: 'center',
-                            width: '100%',
-                            paddingVertical: 10,
-                            borderRadius: 50,
-                            marginRight: 10,
-                            marginBottom: 10,
-                            justifyContent: 'space-between',
-                        }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Text style={{ fontSize: 16, fontWeight: 'semibold' }}>Download Resume</Text>
-                            </View>
-                            <Entypo name='download' style={styles.chevron} />
-                        </TouchableOpacity>
-                    </View>
+                        <Text style={styles.subtitle}>Documents</Text>
+                        <View
+                            style={{
+                                width: '100%',
+                            }}>
+                            <TouchableOpacity style={{
+                                flexDirection: 'row', alignItems: 'center',
+                                width: '100%',
+                                paddingVertical: 10,
+                                borderRadius: 50,
+                                marginRight: 10,
+                                marginBottom: 10,
+                                justifyContent: 'space-between',
+                            }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 16, fontWeight: 'semibold' }}>Download Resume</Text>
+                                </View>
+                                <Entypo name='download' style={styles.chevron} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 }
 
-             
 
 
-            
+
+                <PrimaryButton
+                    title="Delete Card"
+                    variant='outline'
+                    onPress={() => { }}
+                    textStyle={{ color: 'red' }}
+                    style={{ marginTop: 0, borderColor: 'red', marginBottom: 20 }}
+                />
 
 
                 <PrimaryButton
                     title="Share Card"
-                    variant='outline'
-                    onPress={() => { }}
+                    // variant='outline'
+                    onPress={onShareCard}
                     style={{ marginTop: 0 }}
                 />
 
