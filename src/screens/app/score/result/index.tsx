@@ -2,8 +2,22 @@ import React from "react";
 import { Text, View, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import PrimaryButton from "../../../../components/buttons/primary";
 import CircularProgress from 'react-native-circular-progress-indicator';
+import { Colors } from "../../../../utils/colors";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function ColdMailerResult() {
+export default function ColdMailerResult({navigation,route}: any) {
+
+    const result = route.params?.result
+
+    const totalScore = result.total_score || 0
+    const shortListScore = result.short_list_score
+    const selectionScore = result.selection_score
+    const shouldApply = result.should_apply
+    const nextSteps = result.next_steps
+    const strengths = result.strengths
+    const weaknesses = result.weaknesses
+
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 50 }} showsVerticalScrollIndicator={false}>
             <View
@@ -19,7 +33,7 @@ export default function ColdMailerResult() {
 
                 <View style={{ alignItems: 'center' }}>
                     <CircularProgress
-                        value={60}
+                        value={totalScore}
                         radius={30}
                         duration={2000}
                         progressValueColor={'black'}
@@ -41,7 +55,7 @@ export default function ColdMailerResult() {
 
                 <View style={{ alignItems: 'center' }}>
                     <CircularProgress
-                        value={60}
+                        value={shortListScore}
                         radius={30}
                         duration={2000}
                         progressValueColor={'black'}
@@ -61,7 +75,7 @@ export default function ColdMailerResult() {
 
                 <View style={{ alignItems: 'center' }}>
                     <CircularProgress
-                        value={60}
+                        value={selectionScore}
                         radius={30}
                         duration={2000}
                         progressValueColor={'black'}
@@ -87,7 +101,13 @@ export default function ColdMailerResult() {
                 color: 'gray',
                 marginBottom: 4,
             }}>Should Apply ?</Text>
-            <Text style={{ fontSize: 16, marginBottom: 10 }}>Yes , We suggest should apply for this role !</Text>
+            {
+                shouldApply ?
+                <Text style={{ fontSize: 16, marginBottom: 10,color:'green' }}>Yes , We suggest should apply for this role !</Text>
+                :
+                <Text style={{ fontSize: 16, marginBottom: 10,color:'red' }}>No , We would'nt suggest to apply for this role !</Text>
+            }
+           
 
             <Text style={{
                 fontSize: 14,
@@ -96,10 +116,17 @@ export default function ColdMailerResult() {
                 marginTop: 20,
             }}>Improvements / Next Steps </Text>
             <View>
-                <Text style={{ fontSize: 16, marginBottom: 10 }}>-  Add more details about your experience</Text>
-                <Text style={{ fontSize: 16, marginBottom: 10 }}>- Add more details about your projects</Text>
-                <Text style={{ fontSize: 16, marginBottom: 10 }}>- Add more details about your skills</Text>
+                {
+                    nextSteps.map((item: any, index: number) => {
+                        return (
+                            <Text key={index} style={{ fontSize: 16, marginBottom: 10 }}>{`- ${item}`}</Text>
+                        )
+                    })
+                }
             </View>
+            
+
+          
 
         </ScrollView>
     );

@@ -12,6 +12,7 @@ import { Image } from "react-native";
 import { Colors } from "../../../../utils/colors";
 import LottieView from 'lottie-react-native';
 import GeneratingModal from "../../../../components/generatingModal";
+import { getProfileAnalysis } from "../../../../configs/openai";
 
 export default function ScoreForm({ navigation }: any) {
 
@@ -23,7 +24,7 @@ export default function ScoreForm({ navigation }: any) {
     }, [])
 
     const [jobDescription, setJobDescription] = React.useState<string>('');
-    const [profile, setProfile] = React.useState<any>(0);
+    const [selectedProfile, setProfile] = React.useState<any>(0);
 
     const [isLoading, setIsLoading] = React.useState(false)
     const [userData, setUserData] = React.useState<User | null>(null)
@@ -52,17 +53,27 @@ export default function ScoreForm({ navigation }: any) {
             return
         }
 
-        if (profile === null) {
+        if (selectedProfile === null) {
             Alert.alert('Profile Analysis', 'Please select your profile')
             return
         }
 
         setIsGenerating(true)
-        setTimeout(() => {
-            setIsGenerating(false)
+        await getProfileAnalysis(userData?.profiles[selectedProfile], jobDescription)
+            .then((res: any) => {
+                console.log(res)
+                const data = JSON.parse(res)
+                console.log(data);
 
-        }
-            , 2000)
+                navigation.navigate(Routes.app.analysis.results, { result: data })
+                setIsGenerating(false)
+            })
+            .catch((err: any) => {
+                console.log(err)
+                setIsGenerating(false)
+                Alert.alert('Profile Analysis', 'Some error occurred')
+            })
+
 
     }
 
@@ -112,7 +123,7 @@ export default function ScoreForm({ navigation }: any) {
                 {
                     userData?.profiles.map((item, index) => {
                         return (
-                            <TouchableOpacity key={index} style={[styles.profileButton, { backgroundColor: profile === index ? Colors.accent : 'white' }]}
+                            <TouchableOpacity key={index} style={[styles.profileButton, { backgroundColor: selectedProfile === index ? Colors.accent : 'white' }]}
                                 onPress={() => {
                                     setProfile(index)
                                 }}>
@@ -121,16 +132,16 @@ export default function ScoreForm({ navigation }: any) {
                                     <Image source={{ uri: user.profileImage }}
                                         style={{
                                             width: 40, height: 40, borderRadius: 20,
-                                            borderWidth: 2, borderColor: profile === index ? 'white' : 'black'
+                                            borderWidth: 2, borderColor: selectedProfile === index ? 'white' : 'black'
                                         }} />
                                     <Text style={{
                                         marginLeft: 10, fontSize: 16,
-                                        fontWeight: profile === index ? 'bold' : 'normal',
-                                        color: profile === index ? 'white' : 'black'
+                                        fontWeight: selectedProfile === index ? 'bold' : 'normal',
+                                        color: selectedProfile === index ? 'white' : 'black'
                                     }}>{item.title}</Text>
                                 </View>
                                 {
-                                    profile === index && <MaterialIcons name="check" size={20} color={'white'} />
+                                    selectedProfile === index && <MaterialIcons name="check" size={20} color={'white'} />
                                 }
                             </TouchableOpacity>
                         )
