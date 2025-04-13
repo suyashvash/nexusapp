@@ -27,7 +27,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import AuthNavigator from './src/screens/auth';
 import AppNavigator from './src/screens';
-
+import { firebaseApp } from './src/configs/firebase'
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';

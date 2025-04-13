@@ -1,4 +1,4 @@
-package com.nexusapp
+package com.nexus.app
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

@@ -1,4 +1,4 @@
-package com.nexusapp
+package com.nexus.app
 
 import android.app.Application
 import com.facebook.react.PackageList

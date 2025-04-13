@@ -17,6 +17,9 @@ import { Routes } from '../../../utils/routes';
 import { Colors } from '../../../utils/colors';
 import { useAxios } from '../../../hooks/api/useAxios';
 import Logo from '../../../assets/logo.png'
+import auth from '@react-native-firebase/auth';
+import LoadingModal from 'react-native-loading-modal';
+import { collection, doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
 
 
 interface LoginForm {
@@ -26,38 +29,69 @@ interface LoginForm {
 
 const LoginScreen = ({ navigation }: any) => {
 
-    const axios = useAxios()
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    const db = getFirestore()
+    const citiesRef = collection(db, "Users");
+
     const handleSubmit = async () => {
-        // if (email.trim() == '') {
-        //     Alert.alert('Email is required');
-        //     return;
-        // }
+        if (email.trim() == '') {
+            Alert.alert('Email is required');
+            return;
+        }
 
-        // if (password.trim() == '') {
-        //     Alert.alert('Password is required');
-        //     return;
-        // }
+        if (password.trim() == '') {
+            Alert.alert('Password is required');
+            return;
+        }
 
-        // await axios.post(ApiCollection.auth.login, { email, password })
-        //     .then((res) => {
-        //         console.log(res.data)
-        //     })
-        //     .catch((err) => {
-        //         console.log(err)
-        //         Alert.alert('Invalid Credentials')
-        //     })
+        setIsLoading(true)
 
-        navigation.replace(Routes.app.tag);
+        await auth()
+            .signInWithEmailAndPassword(email, password)
+            .then(async(userCredential) => {
+
+                let user = userCredential.user;
+                console.log('User logged in:', user.uid);
+
+                const docRef = doc(db, "Users", user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists) {
+                    console.log("Document data:", docSnap.data());
+                    const userData = docSnap.data()
+                    // navigation.navigate(Routes.home.home, { user: userData });
+                    console.log("User data:", userData);
+                    
+                } else {
+                    console.log("No such document!");
+                    Alert.alert('User not found')
+                }
+
+                setIsLoading(false)
+
+            })
+            .catch((error) => {
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        Alert.alert('User not found');
+                        break;
+                    case 'auth/wrong-password':
+                        Alert.alert('Wrong password');
+                        break;
+                    default:
+                        Alert.alert('Login failed', error.message);
+                }
+                setIsLoading(false)
+            })
+
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* <LoadingModal modalVisible={isLoading} color={Colors.primary} /> */}
+            <LoadingModal modalVisible={isLoading} color={Colors.primary} />
             <Pressable style={styles.formContainer} onPress={() => Keyboard.dismiss()}>
 
                 <Image
@@ -65,8 +99,8 @@ const LoginScreen = ({ navigation }: any) => {
                     style={{ width: 250, height: 100 }}
                     resizeMode='contain'
                 />
-                <Text style={{marginBottom:40,color:Colors.accent,fontWeight:'bold'}}>Making Job Hunt Efficient !</Text>
-                    
+                <Text style={{ marginBottom: 40, color: Colors.accent, fontWeight: 'bold' }}>Making Job Hunt Efficient !</Text>
+
 
                 <AppTextInput
                     label="Email"
