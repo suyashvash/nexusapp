@@ -58,6 +58,7 @@ const LoginScreen = ({ navigation }: any) => {
                 let user = userCredential.user;
                 console.log('User logged in:', user.uid);
 
+
                 const docRef = doc(db, "Users", user.uid);
                 const docSnap = await getDoc(docRef);
 
