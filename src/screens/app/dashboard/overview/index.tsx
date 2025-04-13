@@ -1,19 +1,66 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, Dimensions, ImageBackground } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, Dimensions, ImageBackground, ActivityIndicator } from 'react-native';
 import { Routes } from '../../../../utils/routes';
 import { ScrollView } from 'react-native-gesture-handler';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../../../../utils/colors';
 import Card from '../../../../components/card';
+import useUser from '../../../../redux/useStore';
+import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
+import { User } from '../../../../redux/slices/userSlice';
+import EmptyCard from '../../../../components/card/emptyCard';
 
 
 const OverviewScreen = ({ navigation }) => {
+
+    const user = useUser()
+    const db = getFirestore()
+
+    useEffect(() => {
+        getUserData()
+    }, [])
+
+    const [isLoading, setIsLoading] = React.useState(false)
+    const [userData, setUserData] = React.useState<User | null>(null)
+
+    const getUserData = async () => {
+        setIsLoading(true)
+        const docRef = doc(db, "Users", user.id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists) {
+            console.log("Document data:", docSnap.data());
+            const data = docSnap.data() as User
+            setUserData(data)
+            setIsLoading(false)
+        }
+
+    }
+
+
     const cards = [
         { id: '1', name: 'Suyash Vashishtha', title: 'Swift UI Developer' },
         { id: '2', name: 'John Doe', title: 'React Native Developer' },
         { id: '3', name: 'Jane Smith', title: 'Backend Developer' },
     ];
+
+    if (isLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+                <Text style={{ marginTop: 10, fontSize: 16 }}>Loading...</Text>
+            </View>
+        )
+    }
+
+    if (userData == null) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ fontSize: 16 }}>No Data Found</Text>
+            </View>
+        )
+    }
 
     return (
 
@@ -25,31 +72,39 @@ const OverviewScreen = ({ navigation }) => {
                     source={{ uri: `https://api.dicebear.com/9.x/notionists/png?seed=suyassss` }}
                     style={styles.profileImage}
                 />
-                <Text style={styles.profileName}>Suyash Vashishtha</Text>
+                <Text style={styles.profileName}>{userData.name}</Text>
                 <Text style={styles.profileViews}>100 Views</Text>
 
                 <Text style={styles.sectionTitle}>My Cards</Text>
 
             </View>
-            <ScrollView
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                style={{ padding: 10, paddingTop: 0, width: '95%' }}
-            >
-                {
-                    cards.map((card, index) => (
-                        <Card
-                            key={card.id}
-                            name={card.name}
-                            style={index == cards.length - 1 ? { marginRight: 30 } : {}}
-                            title={card.title}
-                            onClick={() => { navigation.navigate(Routes.app.dashboard.card.detail) }}
-                        />
-                    ))
-                }
+            {
+                userData.profiles.length > 0 ?
+                    <ScrollView
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        style={{ padding: 10, paddingTop: 0, width: '95%' }}
+                    >
+                        {
+                            cards.map((card, index) => (
+                                <Card
+                                    key={card.id}
+                                    name={card.name}
+                                    style={index == cards.length - 1 ? { marginRight: 30 } : {}}
+                                    title={card.title}
+                                    onClick={() => { navigation.navigate(Routes.app.dashboard.card.detail) }}
+                                />
+                            ))
+                        }
 
 
-            </ScrollView>
+                    </ScrollView>
+                    :
+                    <View style={{ width: '90%',  paddingTop: 0 }}>
+                        <EmptyCard/>
+                    </View>
+            }
+
 
             <View
                 style={{

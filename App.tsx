@@ -28,6 +28,9 @@ import {
 import AuthNavigator from './src/screens/auth';
 import AppNavigator from './src/screens';
 import { firebaseApp } from './src/configs/firebase'
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './src/redux/store'
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -37,9 +40,14 @@ function App(): React.JSX.Element {
   };
 
   return (
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </PersistGate>
+    </Provider>
+
   );
 }
 

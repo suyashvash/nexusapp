@@ -20,6 +20,8 @@ import Logo from '../../../assets/logo.png'
 import auth from '@react-native-firebase/auth';
 import LoadingModal from 'react-native-loading-modal';
 import { collection, doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
+import { setActiveUser, User } from '../../../redux/slices/userSlice';
+import { useDispatch } from 'react-redux';
 
 
 interface LoginForm {
@@ -34,7 +36,7 @@ const LoginScreen = ({ navigation }: any) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const db = getFirestore()
-    const citiesRef = collection(db, "Users");
+    const dispatch = useDispatch()
 
     const handleSubmit = async () => {
         if (email.trim() == '') {
@@ -61,16 +63,19 @@ const LoginScreen = ({ navigation }: any) => {
 
                 if (docSnap.exists) {
                     console.log("Document data:", docSnap.data());
-                    const userData = docSnap.data()
+                    const userData = docSnap.data() as User
                     // navigation.navigate(Routes.home.home, { user: userData });
                     console.log("User data:", userData);
-                    
+                    dispatch(setActiveUser(userData))
+                    navigation.replace(Routes.app.tag)
+                    setIsLoading(false)
                 } else {
                     console.log("No such document!");
+                    setIsLoading(false)
                     Alert.alert('User not found')
                 }
 
-                setIsLoading(false)
+              
 
             })
             .catch((error) => {
