@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
 import AppTextInput from '../../../../../components/input/textinput';
 import PrimaryButton from '../../../../../components/buttons/primary';
 import Card from '../../../../../components/card';
 import { Colors } from '../../../../../utils/colors';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { pick, types } from '@react-native-documents/picker'
 import { doc, getDoc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
 import useUser from '../../../../../redux/useStore';
@@ -16,8 +17,11 @@ const CreateCardScreen = ({ navigation }) => {
     const db = getFirestore()
     const user = useUser()
 
+    const scrollViewRef = useRef(null);
+
     useEffect(() => {
         getUserData()
+        scrollToTheme(1)
     }, [])
 
 
@@ -28,10 +32,16 @@ const CreateCardScreen = ({ navigation }) => {
     const [projectLinks, setProjectLinks] = useState<string[]>([]);
     const [resume, setResume] = useState<DocumentPickerResponse | null>(null);
     const [portfolio, setPortfolio] = useState<string>('');
-
+    const [selectedTheme, setSelectedTheme] = useState(1);
 
     const [isLoading, setIsLoading] = React.useState(false)
     const [userData, setUserData] = React.useState<User | null>(null)
+
+    const themes = [
+        "https://t4.ftcdn.net/jpg/04/89/68/23/360_F_489682374_ckc0OVyT6Av0NGcuYbwBSCxy62blF4CQ.jpg",
+        "https://wallpapershome.com/images/pages/pic_h/26424.jpg",
+        "https://images.unsplash.com/photo-1679210208332-a58e411412ab?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2NpJTIwZmklMjBiYWNrZ3JvdW5kfGVufDB8fDB8fHww",
+    ]
 
     const getUserData = async () => {
 
@@ -112,6 +122,7 @@ const CreateCardScreen = ({ navigation }) => {
             resume: resume,
             id: new Date().getTime().toString(),
             portfolio: portfolio,
+            theme: themes[selectedTheme],
         }
 
 
@@ -123,8 +134,8 @@ const CreateCardScreen = ({ navigation }) => {
 
         profiles?.push(card)
 
-        const washingtonRef = doc(db, "Users", user.id);
-        await updateDoc(washingtonRef, {
+        const userRef = doc(db, "Users", user.id);
+        await updateDoc(userRef, {
             profiles: profiles,
         })
             .then(() => {
@@ -142,21 +153,83 @@ const CreateCardScreen = ({ navigation }) => {
 
     };
 
+    const scrollToTheme = (index) => {
+        if (scrollViewRef.current) {
+            // Calculate the offset to center the theme (each card is 300px wide)
+            const offset = index * 300 - (Dimensions.get('window').width - 300) / 2;
+            scrollViewRef.current.scrollTo({ x: Math.max(0, offset) + 30, y: 0, animated: true });
+        }
+    };
+
     return (
         <ScrollView
+
             contentContainerStyle={styles.container}
         >
             <LoadingModal modalVisible={isLoading} color={Colors.primary} />
-            <Card
-                name={userData?.name || user.name}
-                title={mainTitle === '' ? 'Your Title will come here..' : mainTitle}
-                views={100}
-                onClick={() => { }}
+            <Text
                 style={{
-                    width: Dimensions.get('window').width - 40,
-                    marginBottom: 30
-                }}
-            />
+                    fontSize: 14,
+                    // position: 'absolute',
+                    // top: -10,
+                    color: 'black',
+                    fontWeight: 'semibold',
+                    // marginLeft: 10,
+                    backgroundColor: 'white',
+                    // paddingHorizontal: 10,
+                    marginBottom: 10,
+                    marginTop: 10,
+                }}>
+                Select Card Theme
+            </Text>
+
+
+
+            <ScrollView
+                horizontal={true}
+                ref={scrollViewRef}
+                showsHorizontalScrollIndicator={false}
+                style={{ width: '100%' }}
+            >
+                {
+                    themes.map((theme, index) => (
+                        <View key={index} style={{ position: 'relative' }}>
+                            <Card
+                                key={index}
+                                bgUrl={theme}
+                                name={userData?.name || user.name}
+                                title={mainTitle === '' ? 'Your Title will come here..' : mainTitle}
+                                views={100}
+                                onClick={() => {
+                                    setSelectedTheme(index)
+                                }}
+                                style={{
+                                    width: 300,
+                                    marginBottom: 30
+                                }}
+                            />
+                            {
+                                selectedTheme === index ? (
+                                    <MaterialCommunityIcons
+                                        style={{
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                            margin: 10,
+                                            zIndex: 100,
+                                        }}
+                                        name="check-decagram" size={25} color={'white'} />
+                                ) : null
+                            }
+
+                        </View>
+                    ))
+                }
+
+
+            </ScrollView>
+
+
 
             <AppTextInput
                 label='Card Title'

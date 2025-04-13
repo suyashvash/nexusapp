@@ -8,15 +8,19 @@ interface CardProps {
     views?: number;
     onClick?: () => void;
     style?:ViewStyle;
+    bgUrl?: string;
 }
 
-const Card = ({ name, title, views, onClick,style }: CardProps) => {
+const Card = ({ name, title, views, onClick,style ,bgUrl}: CardProps) => {
     
     const user = useUser()
 
     return(
     <TouchableOpacity onPress={onClick}>
-        <ImageBackground style={[styles.cardContainer,style]} src='https://t4.ftcdn.net/jpg/04/89/68/23/360_F_489682374_ckc0OVyT6Av0NGcuYbwBSCxy62blF4CQ.jpg'>
+        <ImageBackground 
+        blurRadius={2}
+        style={[styles.cardContainer,style]} 
+        src={ bgUrl || 'https://wallpapershome.com/images/pages/pic_h/26424.jpg'}>
             <Image source={{ uri: user.profileImage }} style={styles.cardImage} />
             <Text style={styles.cardName}>{name || user.name}</Text>
             <Text style={styles.cardTitle}>{title}</Text>

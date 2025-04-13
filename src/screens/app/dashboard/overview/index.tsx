@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, Dimensions, ImageBackground, ActivityIndicator } from 'react-native';
 import { Routes } from '../../../../utils/routes';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -19,6 +19,9 @@ const OverviewScreen = ({ navigation }) => {
     const db = getFirestore()
     const isFocused = useIsFocused()
 
+    const scrollViewRef = useRef(null);
+
+
     useEffect(() => {
         if (isFocused) {
             getUserData()
@@ -37,10 +40,25 @@ const OverviewScreen = ({ navigation }) => {
             console.log("Document data:", docSnap.data());
             const data = docSnap.data() as User
             setUserData(data)
+
+            if(data.profiles.length>1){
+                if(data.profiles.length >= 3){
+                    scrollToTheme(1)
+                }
+            }
+
             setIsLoading(false)
         }
 
     }
+
+    const scrollToTheme = (index) => {
+        if (scrollViewRef.current) {
+            // Calculate the offset to center the theme (each card is 300px wide)
+            const offset = index * 300 - (Dimensions.get('window').width - 300) / 2;
+            scrollViewRef.current.scrollTo({ x: Math.max(0, offset) + 30, y: 0, animated: true });
+        }
+    };
 
     if (isLoading) {
         return (
@@ -87,6 +105,7 @@ const OverviewScreen = ({ navigation }) => {
                         </View>
                         :
                         <ScrollView
+                            ref={scrollViewRef}
                             horizontal={true}
                             showsHorizontalScrollIndicator={false}
                             style={{ padding: 5, paddingTop: 0, width: '95%' }}
@@ -94,6 +113,7 @@ const OverviewScreen = ({ navigation }) => {
                             {
                                 userData.profiles.map((card, index) => (
                                     <Card
+                                        bgUrl={card.theme}
                                         key={card.id || index}
                                         style={index == userData.profiles.length - 1 ? { marginRight: 30 } : {}}
                                         title={card.title}

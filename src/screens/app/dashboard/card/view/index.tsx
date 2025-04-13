@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Linking, Share } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Linking, Share, Alert } from 'react-native';
 import { Colors } from '../../../../../utils/colors';
 import PrimaryButton from '../../../../../components/buttons/primary';
 import Card from '../../../../../components/card';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { User } from '../../../../../redux/slices/userSlice';
-import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
+import { deleteDoc, doc, getDoc, getFirestore, updateDoc } from '@react-native-firebase/firestore';
 import useUser from '../../../../../redux/useStore';
 
 const CardDetailScreen = ({ navigation, route }) => {
@@ -41,11 +41,48 @@ const CardDetailScreen = ({ navigation, route }) => {
         Share.share({
             message: `Check out my Nexus card to view my professional journey ! \n\n`,
             title: `${user.name} - ${thisCard?.title}`,
-            url : `https://nexuscard.web.app/card?id=${thisCard?.id}`,
+            url: `https://nexuscard.web.app/card?id=${thisCard?.id}`,
         })
             .then((result) => console.log(result))
             .catch((error) => console.log('Error sharing card:', error));
 
+    }
+
+    const onDeleteCard = async () => {
+        Alert.alert(
+            "Delete Card",
+            "Are you sure you want to delete this card?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "OK",
+                    onPress: async () => {
+                        setIsLoading(true)
+                        const userRef = doc(db, "Users", user.id);
+
+                        const newProfiles = userData?.profiles.filter((card: any) => card.id !== id)
+
+                        await updateDoc(userRef, {
+                            profiles: newProfiles,
+                        })
+                            .then(() => {
+                                console.log("Document successfully updated!");
+                                Alert.alert('Card Deleted', 'Card deleted successfully!')
+                                setIsLoading(false)
+                                navigation.goBack()
+                            })
+                            .catch((error) => {
+                                console.error("Error updating document: ", error);
+                                setIsLoading(false)
+                                Alert.alert('Error', 'Error deleting card!')
+                            });
+                    }
+                }
+            ]
+        )
     }
 
 
@@ -70,6 +107,7 @@ const CardDetailScreen = ({ navigation, route }) => {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Card
+                bgUrl={thisCard.theme}
                 title={thisCard.title}
                 views={100}
                 onClick={() => { }}
@@ -194,7 +232,7 @@ const CardDetailScreen = ({ navigation, route }) => {
                 <PrimaryButton
                     title="Delete Card"
                     variant='outline'
-                    onPress={() => { }}
+                    onPress={onDeleteCard}
                     textStyle={{ color: 'red' }}
                     style={{ marginTop: 0, borderColor: 'red', marginBottom: 20 }}
                 />

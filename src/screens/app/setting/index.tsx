@@ -44,7 +44,7 @@ const ProfileScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Image
-                source={{ uri: user.profileImage }}
+                source={{ uri: user?.profileImage || '' }}
                 style={styles.profileImage}
             />
             <Text style={styles.name}>{user.name}</Text>
