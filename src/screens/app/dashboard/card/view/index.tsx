@@ -39,9 +39,9 @@ const CardDetailScreen = ({ navigation, route }) => {
 
     const onShareCard = () => {
         Share.share({
-            message: `Check out my Nexus card to view my professional journey ! \n\n`,
+            message: `Check out my Nexus card to view my professional journey ! \n\n https://nexuscard.web.app?cardId=${thisCard?.id}`,
             title: `${user.name} - ${thisCard?.title}`,
-            url: `https://nexuscard.web.app?cardId=${thisCard?.id}`,
+            // url: `https://nexuscard.web.app?cardId=${thisCard?.id}`,
         })
             .then((result) => console.log(result))
             .catch((error) => console.log('Error sharing card:', error));

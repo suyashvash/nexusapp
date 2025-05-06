@@ -373,7 +373,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Your Firebase configuration
         const firebaseConfig =  {
@@ -392,6 +392,41 @@
         // Get card ID from URL parameters
         const urlParams = new URLSearchParams(window.location.search);
         const cardId = urlParams.get('cardId');
+
+        // Analytics tracking functions
+        async function trackEvent(eventType, data) {
+            try {
+                const analyticsRef = collection(db, "Analytics");
+                await addDoc(analyticsRef, {
+                    eventType,
+                    cardId: data.cardId,
+                    userId: data.userId || null,
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    referrer: document.referrer,
+                    ...data
+                });
+                console.log(`Tracked ${eventType} event`);
+            } catch (error) {
+                console.error(`Error tracking ${eventType} event:`, error);
+            }
+        }
+
+        function trackCardView(cardId, userId) {
+            trackEvent('card_view', { cardId, userId });
+        }
+
+        function trackPortfolioView(cardId, userId) {
+            trackEvent('portfolio_views', { cardId, userId });
+        }
+
+        function trackReachOut(cardId, userId, userEmail) {
+            trackEvent('reach_out', { cardId, userId, userEmail });
+        }
+
+        function trackProjectView(cardId, userId, projectName, projectLink) {
+            trackEvent('project_view', { cardId, userId, projectName, projectLink });
+        }
 
         if (!cardId) {
             renderError("No card ID provided");
@@ -424,6 +459,10 @@
 
                 if (cardData) {
                     renderCard(cardData, userData);
+                    // Track card view
+                    trackCardView(cardId, userData.id || userData.uid || null);
+                    // Track profile view
+                  
                 } else {
                     renderError("Card not found");
                 }
@@ -435,6 +474,7 @@
 
         function renderCard(card, user) {
             const appDiv = document.getElementById('app');
+            const userId = user.id || user.uid || null;
             
             const content = `
                 <div class="container">
@@ -455,8 +495,11 @@
                         ${card.portfolio ? `
                         <div class="section">
                             <div class="section-title">Portfolio</div>
-                            <div class="section-content">
-                                <a href="${card.portfolio}" target="_blank" class="project-link">
+                            <div class="section-content"
+                            
+                            onclick="(function(){ window.trackPortfolioView('${card.id}', '${userId}'); })();"
+                            >
+                                <a href="${card.portfolio}" target="_blank" class="project-link" onclick="(function(e){ e.preventDefault(); window.trackProjectView('${card.id}', '${userId}', 'Portfolio', '${card.portfolio}'); window.open('${card.portfolio}', '_blank'); })();">
                                     <div class="project-link-left">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -491,7 +534,7 @@
                             <div class="section-title">Projects</div>
                             <div class="projects-container">
                                 ${card.projects.map((project, index) => `
-                                <a href="${project.link}" target="_blank" class="project-link">
+                                <a href="${project.link}" target="_blank" class="project-link" onclick="(function(e){ e.preventDefault(); window.trackProjectView('${card.id}', '${userId}', '${project.name}', '${project.link}'); window.open('${project.link}', '_blank'); })();">
                                     <div class="project-link-left">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
@@ -513,7 +556,7 @@
                         ${card.resume ? `
                         <div class="section">
                             <div class="section-title">Resume</div>
-                            <a href="${card.resume.fileCopyUri || '#'}" target="_blank" class="resume-link">
+                            <a href="${card.resume.fileCopyUri || '#'}" target="_blank" class="resume-link" onclick="(function(e){ e.preventDefault(); window.trackProjectView('${card.id}', '${userId}', 'Resume', '${card.resume.fileCopyUri || '#'}'); window.open('${card.resume.fileCopyUri || '#'}', '_blank'); })();">
                                 <div>Download Resume</div>
                                 <div>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -525,7 +568,7 @@
                         ` : ''}
 
                         <div class="reach-out-section">
-                    <a href="mailto:${user.email || ''}?subject=Interested in Collaborating with You&body=Hi ${user.name || ''},\n\nI just viewed your Nexus profile card and I'm really impressed with your skills and experience. I'd love to discuss potential collaboration opportunities and work together on future projects.\n\nLooking forward to hearing back from you!\n\nBest regards," class="reach-out-button">
+                    <a href="mailto:${user.email || ''}?subject=Interested in Collaborating with You&body=Hi ${user.name || ''},\n\nI just viewed your Nexus profile card and I'm really impressed with your skills and experience. I'd love to discuss potential collaboration opportunities and work together on future projects.\n\nLooking forward to hearing back from you!\n\nBest regards," class="reach-out-button" onclick="(function(){ window.trackReachOut('${card.id}', '${userId}', '${user.email || ''}'); })();">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="reach-out-icon">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                             <polyline points="22,6 12,13 2,6"></polyline>
@@ -542,32 +585,37 @@
             `;
             
             appDiv.innerHTML = content;
+            
+            // Expose tracking functions to window object for onclick handlers
+            window.trackProjectView = trackProjectView;
+            window.trackReachOut = trackReachOut;
+            window.trackPortfolioView = trackPortfolioView;
         }
 
         function renderError(message) {
-    const appDiv = document.getElementById('app');
-    appDiv.innerHTML = `
-        <div class="container">
-            <div class="error-container">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-                <h2>Oops! Something went wrong</h2>
-                <p>${message}</p>
-                ${message === "No card ID provided" ? `
-                    <div class="error-help">
-                        <p>It looks like you're trying to view a NexusCard without specifying which one.</p>
-                        <p>The correct URL format should be:</p>
-                        <code>https://nexuscard.web.app?cardId=YOUR_CARD_ID</code>
-                      
+            const appDiv = document.getElementById('app');
+            appDiv.innerHTML = `
+                <div class="container">
+                    <div class="error-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <h2>Oops! Something went wrong</h2>
+                        <p>${message}</p>
+                        ${message === "No card ID provided" ? `
+                            <div class="error-help">
+                                <p>It looks like you're trying to view a NexusCard without specifying which one.</p>
+                                <p>The correct URL format should be:</p>
+                                <code>https://nexuscard.web.app?cardId=YOUR_CARD_ID</code>
+                              
+                            </div>
+                        ` : ''}
                     </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
-}
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>

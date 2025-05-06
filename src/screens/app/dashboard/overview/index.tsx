@@ -7,56 +7,124 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { Colors } from '../../../../utils/colors';
 import Card from '../../../../components/card';
 import useUser from '../../../../redux/useStore';
-import { doc, getDoc, getFirestore } from '@react-native-firebase/firestore';
+import { doc, getDoc, getFirestore, collection, query, where, getDocs } from '@react-native-firebase/firestore';
 import { User } from '../../../../redux/slices/userSlice';
 import EmptyCard from '../../../../components/card/emptyCard';
 import { useIsFocused } from '@react-navigation/native';
 
-
 const OverviewScreen = ({ navigation }) => {
-
-    const user = useUser()
-    const db = getFirestore()
-    const isFocused = useIsFocused()
+    const user = useUser();
+    const db = getFirestore();
+    const isFocused = useIsFocused();
 
     const scrollViewRef = useRef(null);
 
+    const [analyticsData, setAnalyticsData] = React.useState({
+        portfolioViews: 0,
+        cardViews: 0,
+        reachouts: 0,
+        projectViews: 0,
+
+
+    });
 
     useEffect(() => {
         if (isFocused) {
-            getUserData()
+            getUserData();
+            fetchAnalyticsData();
         }
-    }, [isFocused])
+    }, [isFocused]);
 
-    const [isLoading, setIsLoading] = React.useState(true)
-    const [userData, setUserData] = React.useState<User | null>(null)
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [userData, setUserData] = React.useState<User | null>(null);
 
     const getUserData = async () => {
-        // setIsLoading(true)
-        const docRef = doc(db, "Users", user.id);
+        const docRef = doc(db, 'Users', user.id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists) {
-            console.log("Document data:", docSnap.data());
-            const data = docSnap.data() as User
-            setUserData(data)
+            const data = docSnap.data() as User;
+            setUserData(data);
 
-            if(data.profiles.length>1){
-                if(data.profiles.length >= 3){
-                    scrollToTheme(1)
+            if (data.profiles.length > 1) {
+                if (data.profiles.length >= 3) {
+                    scrollToTheme(1);
                 }
             }
 
-            setIsLoading(false)
-        }else{
-            setIsLoading(false)
+            setIsLoading(false);
+        } else {
+            setIsLoading(false);
         }
+    };
 
-    }
+    const fetchAnalyticsData = async () => {
+        try {
+            const analyticsRef = collection(db, 'Analytics');
+
+            const docRef = doc(db, 'Users', user.id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists) {
+                const userData = docSnap.data() as User;
+                const cardIds = userData.profiles ? userData.profiles.map((profile) => profile.id) : [];
+
+                if (cardIds.length === 0) {
+                    setAnalyticsData({
+                        portfolioViews: 0,
+                        cardViews: 0,
+                        reachouts: 0,
+                        projectViews: 0,
+                    });
+                    return;
+                }
+
+                const cardViewsQuery = query(
+                    analyticsRef,
+                    where('cardId', 'in', cardIds),
+                    where('eventType', '==', 'card_view')
+                );
+                const cardViewsSnapshot = await getDocs(cardViewsQuery);
+                const cardViews = cardViewsSnapshot.size;
+
+                const portfolioViewsQuery = query(
+                    analyticsRef,
+                    where('cardId', 'in', cardIds),
+                    where('eventType', '==', 'portfolio_views')
+                );
+                const portfolioViewSnapshot = await getDocs(portfolioViewsQuery);
+                const portfolioVIews = portfolioViewSnapshot.size;
+
+                const reachOutQuery = query(
+                    analyticsRef,
+                    where('cardId', 'in', cardIds),
+                    where('eventType', '==', 'reach_out')
+                );
+                const reachOutSnapshot = await getDocs(reachOutQuery);
+                const reachouts = reachOutSnapshot.size;
+
+                const projectViewQuery = query(
+                    analyticsRef,
+                    where('cardId', 'in', cardIds),
+                    where('eventType', '==', 'project_view')
+                );
+                const projectViewSnapshot = await getDocs(projectViewQuery);
+                const projectViews = projectViewSnapshot.size;
+
+                setAnalyticsData({
+                    cardViews,
+                    portfolioViews: portfolioVIews,
+                    reachouts,
+                    projectViews: projectViews,
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching analytics:', error);
+        }
+    };
 
     const scrollToTheme = (index) => {
         if (scrollViewRef.current) {
-            // Calculate the offset to center the theme (each card is 300px wide)
             const offset = index * 300 - (Dimensions.get('window').width - 300) / 2;
             scrollViewRef.current.scrollTo({ x: Math.max(0, offset) + 30, y: 0, animated: true });
         }
@@ -68,7 +136,7 @@ const OverviewScreen = ({ navigation }) => {
                 <ActivityIndicator size="large" color={Colors.primary} />
                 <Text style={{ marginTop: 10, fontSize: 16 }}>Loading...</Text>
             </View>
-        )
+        );
     }
 
     if (userData == null) {
@@ -76,62 +144,56 @@ const OverviewScreen = ({ navigation }) => {
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={{ fontSize: 16 }}>No Data Found</Text>
             </View>
-        )
+        );
     }
 
     return (
-
-        <ScrollView style={{ backgroundColor: '#FFFFFF' }}
+        <ScrollView
+            style={{ backgroundColor: '#FFFFFF' }}
             contentContainerStyle={{ paddingBottom: 50, justifyContent: 'center', alignItems: 'center' }}
         >
             <View style={styles.container}>
-                <Image
-                    source={{ uri: user.profileImage }}
-                    style={styles.profileImage}
-                />
+                <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
                 <Text style={styles.profileName}>{userData.name}</Text>
-                <Text style={styles.profileViews}>100 Views</Text>
+                <Text style={styles.profileViews}>{analyticsData.cardViews} Views</Text>
 
                 <Text style={styles.sectionTitle}>My Cards</Text>
-
             </View>
-            {
-                userData.profiles.length > 0 ?
-                    userData.profiles.length == 1 ?
-
-                        <View style={{ width: '90%', paddingTop: 0, justifyContent: 'center', alignItems: 'center' }}>
-                            <Card
-                                title={userData.profiles[0].title}
-                                onClick={() => { navigation.navigate(Routes.app.dashboard.card.detail, { id: userData.profiles[0].id }) }}
-                            />
-                        </View>
-                        :
-                        <ScrollView
-                            ref={scrollViewRef}
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            style={{ padding: 5, paddingTop: 0, width: '95%' }}
-                        >
-                            {
-                                userData.profiles.map((card, index) => (
-                                    <Card
-                                        bgUrl={card.theme}
-                                        key={card.id || index}
-                                        style={index == userData.profiles.length - 1 ? { marginRight: 30 } : {}}
-                                        title={card.title}
-                                        onClick={() => { navigation.navigate(Routes.app.dashboard.card.detail, { id: card.id }) }}
-                                    />
-                                ))
+            {userData.profiles.length > 0 ? (
+                userData.profiles.length == 1 ? (
+                    <View style={{ width: '90%', paddingTop: 0, justifyContent: 'center', alignItems: 'center' }}>
+                        <Card
+                            title={userData.profiles[0].title}
+                            onClick={() =>
+                                navigation.navigate(Routes.app.dashboard.card.detail, { id: userData.profiles[0].id })
                             }
-
-
-                        </ScrollView>
-                    :
-                    <View style={{ width: '90%', paddingTop: 0 }}>
-                        <EmptyCard />
+                        />
                     </View>
-            }
-
+                ) : (
+                    <ScrollView
+                        ref={scrollViewRef}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        style={{ padding: 5, paddingTop: 0, width: '95%' }}
+                    >
+                        {userData.profiles.map((card, index) => (
+                            <Card
+                                bgUrl={card.theme}
+                                key={card.id || index}
+                                style={index == userData.profiles.length - 1 ? { marginRight: 30 } : {}}
+                                title={card.title}
+                                onClick={() =>
+                                    navigation.navigate(Routes.app.dashboard.card.detail, { id: card.id })
+                                }
+                            />
+                        ))}
+                    </ScrollView>
+                )
+            ) : (
+                <View style={{ width: '90%', paddingTop: 0 }}>
+                    <EmptyCard />
+                </View>
+            )}
 
             <View
                 style={{
@@ -145,34 +207,26 @@ const OverviewScreen = ({ navigation }) => {
             <Text style={styles.sectionTitle}>Analytics</Text>
             <View style={styles.analyticsContainer}>
                 <View style={styles.analyticsBox}>
-
                     <AntDesign name="eyeo" size={22} color={Colors.accent} />
-                    <Text style={styles.analyticsLabel}>Card Views</Text>
-                    <Text style={styles.analyticsValue}>100</Text>
-
-
-
+                    <Text style={styles.analyticsLabel}>Portfolio Views</Text>
+                    <Text style={styles.analyticsValue}>{analyticsData.portfolioViews || 0}</Text>
                 </View>
                 <View style={styles.analyticsBox}>
                     <MaterialIcons name="ads-click" size={22} color={Colors.accent} />
-                    <Text style={styles.analyticsLabel}>Card Clicks</Text>
-                    <Text style={styles.analyticsValue}>50</Text>
-
+                    <Text style={styles.analyticsLabel}>Card Views</Text>
+                    <Text style={styles.analyticsValue}>{analyticsData.cardViews || 0}</Text>
                 </View>
                 <View style={styles.analyticsBox}>
-                    <MaterialIcons name="download" size={22} color={Colors.accent} />
-                    <Text style={styles.analyticsLabel}>Resume Downloads</Text>
-                    <Text style={styles.analyticsValue}>20</Text>
-
+                    <MaterialIcons name="mail" size={22} color={Colors.accent} />
+                    <Text style={styles.analyticsLabel}>Reachouts</Text>
+                    <Text style={styles.analyticsValue}>{analyticsData.reachouts || 0}</Text>
                 </View>
                 <View style={styles.analyticsBox}>
                     <AntDesign name="link" size={22} color={Colors.accent} />
                     <Text style={styles.analyticsLabel}>Projects Viewed</Text>
-                    <Text style={styles.analyticsValue}>10</Text>
-
+                    <Text style={styles.analyticsValue}>{analyticsData.portfolioViews || 0}</Text>
                 </View>
             </View>
-
         </ScrollView>
     );
 };
@@ -191,7 +245,7 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         borderColor: 'black',
         borderWidth: 1,
-        backgroundColor: 'black'
+        backgroundColor: 'black',
     },
     profileName: {
         fontSize: 20,
@@ -217,7 +271,6 @@ const styles = StyleSheet.create({
     },
     analyticsBox: {
         width: '47%',
-
         backgroundColor: '#FFFFFF',
         borderRadius: 8,
         padding: 15,
