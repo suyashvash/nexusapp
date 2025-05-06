@@ -60,6 +60,7 @@ REQUIRED APPROACH:
 3. Use specific evidence from the profile (e.g., project links, portfolio items) in your evaluation
 4. Apply industry hiring standards for this specific role/domain
 5. Be honest and quantitative - avoid inflating scores
+6. If profile is not a fit, provide clear, actionable feedback on how to improve and provide low scores
 
 SCORING METHODOLOGY:
 - total_score (0-100): Weighted average based on skills match (40%), experience fit (30%), portfolio evidence (20%), presentation (10%) 
@@ -108,7 +109,8 @@ NEXUSCARD PROFILE:
 - Core Skills: ${profile.skills.join(', ')}
 - Primary Expertise: ${profile.mainSkill}
 - Portfolio URL: ${profile.portfolio}
-- Project Evidence: ${profile.projectLinks.map((project: any) => project).join(', ')}
+- Project URLs: ${profile.projects.map((project: any) => project.link).join(', ')}
+- Project Evidence: ${profile.projects.map((project: any) => project.name).join(', ')}
                `
             }
         ],
@@ -178,7 +180,8 @@ NEXUSCARD PROFILE:
 - Core Skills: ${profile.skills.join(', ')}
 - Primary Expertise: ${profile.mainSkill}
 - Portfolio URL: ${profile.portfolio}
-- Project Evidence: ${profile.projectLinks.map((project: any) => project).join(', ')}
+- Project URLs: ${profile.projects.map((project: any) => project.link).join(', ')}
+- Project Evidence: ${profile.projects.map((project: any) => project.name).join(', ')}
                 `
             }
         ],

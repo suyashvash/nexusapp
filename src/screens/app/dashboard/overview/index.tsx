@@ -48,6 +48,8 @@ const OverviewScreen = ({ navigation }) => {
             }
 
             setIsLoading(false)
+        }else{
+            setIsLoading(false)
         }
 
     }

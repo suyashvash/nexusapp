@@ -54,7 +54,7 @@ export default function ColdMailerForm({ navigation }: any) {
             return
         }
 
-        if(jobDescription.length < 20) {
+        if (jobDescription.length < 20) {
             Alert.alert('Cold Mailer', 'Job description should be at least 20 characters long')
             return
         }
@@ -75,7 +75,7 @@ export default function ColdMailerForm({ navigation }: any) {
                 const parsedContent = JSON.parse(res);
 
                 setIsGenerating(false)
- 
+
                 navigation.navigate(Routes.app.coldMailer.results, {
                     result: parsedContent,
                     jobDescription: jobDescription,
@@ -142,7 +142,8 @@ export default function ColdMailerForm({ navigation }: any) {
                 Select Your Profile
             </Text>
             <View style={{ width: '100%' }}>
-                {
+                {userData &&
+                    userData?.profiles?.length > 0 &&
                     userData?.profiles.map((item, index) => {
                         return (
                             <TouchableOpacity key={index} style={[styles.profileButton, { backgroundColor: profile === index ? Colors.accent : 'white' }]}

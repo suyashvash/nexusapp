@@ -29,7 +29,11 @@ const CreateCardScreen = ({ navigation }) => {
     const [bio, setBio] = useState('');
     const [mainSkill, setMainSkill] = useState('');
     const [skills, setSkills] = useState('');
-    const [projectLinks, setProjectLinks] = useState<string[]>([]);
+    const [projects, setProjects] = useState<{ name: string, link: string }[]>([
+        { name: '', link: '' },
+        { name: '', link: '' },
+        { name: '', link: '' }
+    ]);
     const [resume, setResume] = useState<DocumentPickerResponse | null>(null);
     const [portfolio, setPortfolio] = useState<string>('');
     const [selectedTheme, setSelectedTheme] = useState(1);
@@ -101,16 +105,6 @@ const CreateCardScreen = ({ navigation }) => {
             return;
         }
 
-        // if(projectLinks.length==0){
-        //     Alert.alert('Create Card','Please enter project links for your card');
-        //     return;
-        // }
-
-        // if(resume==null){
-        //     Alert.alert('Create Card','Please upload a resume for your card');
-        //     return;
-        // }
-
         setIsLoading(true)
 
         let card = {
@@ -118,7 +112,7 @@ const CreateCardScreen = ({ navigation }) => {
             bio: bio,
             mainSkill: mainSkill,
             skills: skills.split(','),
-            projectLinks: projectLinks,
+            projects: projects.filter(p => p.name || p.link), // Only include projects with data
             resume: resume,
             id: new Date().getTime().toString(),
             portfolio: portfolio,
@@ -306,125 +300,87 @@ const CreateCardScreen = ({ navigation }) => {
             <Text
                 style={{
                     fontSize: 14,
-                    // position: 'absolute',
-                    // top: -10,
                     color: 'black',
                     fontWeight: 'semibold',
-                    // marginLeft: 10,
                     backgroundColor: 'white',
-                    // paddingHorizontal: 10,
                     marginBottom: 10,
                     marginTop: 10,
                 }}>
-                Add Project Links
+                Add Projects
             </Text>
 
-            <View
-                style={{
-                    marginTop: 0, paddingLeft: 10,
-                    backgroundColor: '#F5F5F5',
-                    borderRadius: 5,
-                    borderColor: '#F5F5F5',
-                    borderWidth: 1,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    marginVertical: 10,
-                    paddingVertical: 5,
-                }}
-            >
-                <Entypo name="link" size={20} color="black" style={{ marginRight: 10 }} />
-                <TextInput
-                    style={
-                        {
-                            marginTop: 0, fontSize: 14, paddingLeft: 10,
+            {projects.map((project, index) => (
+                <View key={index} style={{ marginBottom: 15 }}>
+                    <View
+                        style={{
+                            marginTop: 0, paddingLeft: 10,
+                            backgroundColor: '#F5F5F5',
+                            borderRadius: 5,
+                            borderColor: '#F5F5F5',
+                            borderWidth: 1,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            marginBottom: 5,
+                            paddingVertical: 5,
                         }}
-                    placeholder={'https://example.com'}
-                    placeholderTextColor={'gray'}
-                    keyboardType={'default'}
-                    value={projectLinks[0]}
-                    onChangeText={(text) => {
-                        const newLinks = [...projectLinks];
-                        newLinks[0] = text;
-                        setProjectLinks(newLinks);
-                    }}
-                />
-            </View>
-
-            <View
-                style={{
-                    marginTop: 0, paddingLeft: 10,
-                    backgroundColor: '#F5F5F5',
-                    borderRadius: 5,
-                    borderColor: '#F5F5F5',
-                    borderWidth: 1,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    marginVertical: 10,
-                    paddingVertical: 5,
-                }}
-            >
-                <Entypo name="link" size={20} color="black" style={{ marginRight: 10 }} />
-                <TextInput
-                    style={
-                        {
-                            marginTop: 0, fontSize: 14, paddingLeft: 10,
+                    >
+                        <MaterialCommunityIcons name="application" size={20} color="black" style={{ marginRight: 10 }} />
+                        <TextInput
+                            style={{
+                                marginTop: 0, fontSize: 14, paddingLeft: 10,
+                                flex: 1,
+                            }}
+                            placeholder={'Project Name'}
+                            placeholderTextColor={'gray'}
+                            keyboardType={'default'}
+                            value={project.name}
+                            onChangeText={(text) => {
+                                const newProjects = [...projects];
+                                newProjects[index].name = text;
+                                setProjects(newProjects);
+                            }}
+                        />
+                    </View>
+                    <View
+                        style={{
+                            marginTop: 0, paddingLeft: 10,
+                            backgroundColor: '#F5F5F5',
+                            borderRadius: 5,
+                            borderColor: '#F5F5F5',
+                            borderWidth: 1,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            paddingVertical: 5,
                         }}
-                    placeholder={'https://example.com'}
-                    placeholderTextColor={'gray'}
-                    keyboardType={'default'}
-                    value={projectLinks[1]}
-                    onChangeText={(text) => {
-                        const newLinks = [...projectLinks];
-                        newLinks[1] = text;
-                        setProjectLinks(newLinks);
-                    }}
-                />
-            </View>
-
-            <View
-                style={{
-                    marginTop: 0, paddingLeft: 10,
-                    backgroundColor: '#F5F5F5',
-                    borderRadius: 5,
-                    borderColor: '#F5F5F5',
-                    borderWidth: 1,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    marginVertical: 10,
-                    paddingVertical: 5,
-                }}
-            >
-                <Entypo name="link" size={20} color="black" style={{ marginRight: 10 }} />
-                <TextInput
-                    style={
-                        {
-                            marginTop: 0, fontSize: 14, paddingLeft: 10,
-                        }}
-                    placeholder={'https://example.com'}
-                    placeholderTextColor={'gray'}
-                    keyboardType={'default'}
-                    value={projectLinks[2]}
-                    onChangeText={(text) => {
-                        const newLinks = [...projectLinks];
-                        newLinks[2] = text;
-                        setProjectLinks(newLinks);
-                    }}
-                />
-            </View>
+                    >
+                        <Entypo name="link" size={20} color="black" style={{ marginRight: 10 }} />
+                        <TextInput
+                            style={{
+                                marginTop: 0, fontSize: 14, paddingLeft: 10,
+                                flex: 1,
+                            }}
+                            placeholder={'https://example.com'}
+                            placeholderTextColor={'gray'}
+                            keyboardType={'default'}
+                            value={project.link}
+                            onChangeText={(text) => {
+                                const newProjects = [...projects];
+                                newProjects[index].link = text;
+                                setProjects(newProjects);
+                            }}
+                        />
+                    </View>
+                </View>
+            ))}
 
             <Text
                 style={{
                     fontSize: 14,
-                    // position: 'absolute',
-                    // top: -10,
                     color: 'black',
                     fontWeight: 'semibold',
-                    // marginLeft: 10,
                     backgroundColor: 'white',
-                    // paddingHorizontal: 10,
                     marginBottom: 10,
                     marginTop: 10,
                 }}>

@@ -41,7 +41,7 @@ const CardDetailScreen = ({ navigation, route }) => {
         Share.share({
             message: `Check out my Nexus card to view my professional journey ! \n\n`,
             title: `${user.name} - ${thisCard?.title}`,
-            url: `https://nexuscard.web.app/card?id=${thisCard?.id}`,
+            url: `https://nexuscard.web.app?cardId=${thisCard?.id}`,
         })
             .then((result) => console.log(result))
             .catch((error) => console.log('Error sharing card:', error));
@@ -160,7 +160,7 @@ const CardDetailScreen = ({ navigation, route }) => {
 
                 </View>
                 {
-                    thisCard.projectLinks?.length > 0 &&
+                    thisCard.projects?.length > 0 &&
                     <View style={{ width: '100%', marginBottom: 20 }}>
                         <Text style={styles.subtitle}>Projects</Text>
 
@@ -172,7 +172,7 @@ const CardDetailScreen = ({ navigation, route }) => {
                             }}>
 
 
-                            {thisCard.projectLinks.map((link, index) => (
+                            {thisCard.projects.map((project, index) => (
                                 <TouchableOpacity key={index} style={{
                                     flexDirection: 'row', alignItems: 'center',
                                     width: '100%',
@@ -184,12 +184,12 @@ const CardDetailScreen = ({ navigation, route }) => {
                                 }}
                                     onPress={() => {
 
-                                        Linking.openURL(link)
+                                        Linking.openURL(project.link)
                                     }}
                                 >
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Entypo name='link' size={22} color={'gray'} />
-                                        <Text style={{ marginHorizontal: 10, fontSize: 16, fontWeight: 'semibold' }}>Project {index + 1}</Text>
+                                        <Text style={{ marginHorizontal: 10, fontSize: 16, fontWeight: 'semibold' }}>{project.name}</Text>
                                     </View>
                                     <Entypo name='chevron-right' style={styles.chevron} />
                                 </TouchableOpacity>
