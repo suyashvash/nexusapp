@@ -54,6 +54,11 @@ export default function ColdMailerForm({ navigation }: any) {
             return
         }
 
+        if(jobDescription.length < 20) {
+            Alert.alert('Cold Mailer', 'Job description should be at least 20 characters long')
+            return
+        }
+
         if (receiverBio == '') {
             Alert.alert('Cold Mailer', 'Please enter receiver bio')
             return

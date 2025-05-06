@@ -44,33 +44,34 @@ const getProfileAnalysis = async (profile: any, jobDescription: string) => {
 
     console.log(process.env.OPENAI_API_KEY);
 
-
     const response = await openaiClient.post('/chat/completions', {
         model: 'gpt-4o',
         response_format: zodResponseFormat(analysisSchema, "analysisSchema"),
         messages: [
             {
                 role: 'system',
-                content: `You are a Professional Profile Analyzer that helps job seekers evaluate their candidacy for specific positions.
+                content: `You are a specialized technical recruiter with 10+ years experience in candidate evaluation for tech roles.
 
-TASK: Analyze the provided user profile against the job description to determine match quality and provide actionable feedback.
+TASK: Perform a precise candidate-job fit analysis based on the NexusCard profile data and job description.
 
-JOB DESCRIPTION:
-${jobDescription}
+REQUIRED APPROACH:
+1. First, identify the EXACT key technical skills, experience levels, and qualifications from the job description
+2. Then analyze the NexusCard profile data point-by-point against these requirements
+3. Use specific evidence from the profile (e.g., project links, portfolio items) in your evaluation
+4. Apply industry hiring standards for this specific role/domain
+5. Be honest and quantitative - avoid inflating scores
 
-EVALUATION CRITERIA:
-1. Skills alignment: Match between candidate skills and job requirements
-2. Experience relevance: How well the candidate's background fits the role
-3. Portfolio/project quality: Evidence of relevant practical skills
-4. Overall presentation: How effectively the profile communicates candidate value
+SCORING METHODOLOGY:
+- total_score (0-100): Weighted average based on skills match (40%), experience fit (30%), portfolio evidence (20%), presentation (10%) 
+- short_list_score (0-100): Probability of resume passing ATS and initial HR screening
+- selection_score (0-100): Probability of receiving an offer after completing all interview stages
+- should_apply (true/false): Strategic recommendation with 70% match as minimum threshold for "true"
 
-SCORING EXPLANATION:
-- total_score (0-100): Overall match between profile and job requirements
-- short_list_score (0-100): Probability of being included in the interview candidate pool
-- selection_score (0-100): Likelihood of receiving a job offer following interviews
-- should_apply (true/false): Strategic recommendation on whether to pursue this position
-
-Your analysis must be balanced, highlighting both strengths and areas for improvement. Provide specific, actionable next steps that would improve the candidate's competitive position.
+For actionable feedback:
+* Be ultra-specific about skill gaps relative to job requirements
+* Recommend precise skill demonstrations for the portfolio
+* Suggest concrete resume/profile optimizations for ATS systems
+* Identify quantifiable achievements that would strengthen the application
 
 RESPONSE FORMAT:
 {
@@ -84,33 +85,35 @@ RESPONSE FORMAT:
     "<specific, actionable improvement suggestion>"
   ],
   "strengths": [
-    "<specific strength relative to this job>", 
-    "<specific strength relative to this job>",
-    "<specific strength relative to this job>"
+    "<specific strength relative to this job with evidence>", 
+    "<specific strength relative to this job with evidence>",
+    "<specific strength relative to this job with evidence>"
   ],
   "weaknesses": [
-    "<specific weakness or gap relative to this job>",
-    "<specific weakness or gap relative to this job>",
-    "<specific weakness or gap relative to this job>"
+    "<specific skill/experience gap with recommended remedy>",
+    "<specific skill/experience gap with recommended remedy>",
+    "<specific skill/experience gap with recommended remedy>"
   ]
-}`,
+}`
             },
             {
                 role: 'user',
                 content: `
-                USER PROFILE:
-                - Professional Headline : ${profile.title}
-                - Professional Summary : ${profile.bio}
-                - Skills : ${profile.skills.join(', ')}
-                - Main Skill : ${profile.mainSkill}
-                - Portfolio : ${profile.portfolio}
-                - Projects ( LINKS ) : ${profile.projectLinks.map((project: any) => project).join(', ')}
-        
-               `,
+JOB DESCRIPTION:
+${jobDescription}
+
+NEXUSCARD PROFILE:
+- Professional Title: ${profile.title}
+- Professional Summary: ${profile.bio}
+- Core Skills: ${profile.skills.join(', ')}
+- Primary Expertise: ${profile.mainSkill}
+- Portfolio URL: ${profile.portfolio}
+- Project Evidence: ${profile.projectLinks.map((project: any) => project).join(', ')}
+               `
             }
         ],
-        max_tokens: 500,
-        temperature: 0.5,
+        max_tokens: 600,
+        temperature: 0.4,
     });
 
     try {
@@ -127,57 +130,60 @@ const generateColdMail = async (profile: any, jobDescription: string, receiverIn
         messages: [
             {
                 role: 'system',
-                content: `You are an expert AI Cold Mail Writer that helps job seekers craft compelling outreach messages to potential employers.
+                content: `You are an expert cold email strategist who specializes in helping tech professionals secure interviews through high-conversion outreach messages.
 
-TASK: Create a professional, concise, and impactful cold mail that will grab attention and generate genuine interest in the candidate.
+TASK: Craft a tailored, professional cold email optimized for 40%+ response rate that positions the candidate as the ideal solution for the company's specific needs.
 
+STRUCTURE REQUIREMENTS:
+1. Subject line: Must include a metric/achievement and position name (8-10 words)
+2. Opening: Direct reference to receiver's company/team/recent company news (1-2 sentences)
+3. Skills alignment: Highlight 2-3 *exact match* skills from job description using validation from projects/portfolio
+4. Value proposition: One specific, quantifiable achievement most relevant to role's challenges
+5. Differentiation factor: One unique qualification that other candidates likely won't have
+6. Call to action: Propose a specific time/date for a 20-minute discussion or request a particular next step
+
+OPTIMIZATION RULES:
+- Total length: 150-220 words maximum (scannable in 30 seconds)
+- Tone: Confident but not arrogant, professionally conversational
+- No generic statements ("I'm a hard worker", "passionate developer") 
+- Avoid obvious templated language
+- Include 1-2 technical specifics that demonstrate deep domain knowledge
+- Personalize based on the receiver's role (technical vs. HR)
+- NO life story, entire work history, or irrelevant personal details
+
+RESPONSE FORMAT:
+{
+  "subject_line": "<achievement/metric + position - 8-10 words>",
+  "greeting": "<personalized greeting with name>",
+  "intro_paragraph": "<company-specific opening with recent news/achievement>",
+  "skills_alignment": "<2-3 exact-match skills with evidence>",
+  "value_proposition": "<one quantifiable achievement most relevant to role>",
+  "relevant_experience": "<unique qualification + direct company benefit>",
+  "call_to_action": "<specific meeting proposal/next step>",
+  "closing": "<professional sign-off>"
+}`
+            },
+            {
+                role: 'user',
+                content: `
 JOB DESCRIPTION:
 ${jobDescription}
 
 RECEIVER INFORMATION:
 ${receiverInfo}
 
-GUIDELINES:
-1. Keep the message concise but impactful (300-400 words maximum)
-2. Personalize the content based on the receiver's information
-3. Demonstrate clear understanding of the company's needs and industry
-4. Show how the candidate's specific skills/experience directly address those needs
-5. Balance confidence with humility
-6. Include a clear call to action
-
-Your cold mail should effectively cover:
-- A brief, memorable introduction of who the candidate is
-- Specific value the candidate can bring to the company
-- Why the candidate is particularly well-suited for this role
-- How the candidate's experience aligns with company vision and industry needs
-
-RESPONSE FORMAT:
-{
-  "subject_line": "<attention-grabbing but professional subject line>",
-  "greeting": "<personalized greeting>",
-  "intro_paragraph": "<concise introduction establishing connection and purpose>",
-  "skills_alignment": "<paragraph highlighting key skills that match job requirements>",
-  "value_proposition": "<paragraph explaining specific impact candidate can make>",
-  "relevant_experience": "<paragraph connecting candidate's experience to company vision>",
-  "call_to_action": "<clear next step request>",
-  "closing": "<professional sign-off>"
-}`,
-            },
-            {
-                role: 'user',
-                content: `
-USER PROFILE:
-- Professional Headline: ${profile.title}
+NEXUSCARD PROFILE:
+- Professional Title: ${profile.title}
 - Professional Summary: ${profile.bio}
-- Skills: ${profile.skills.join(', ')}
-- Main Skill: ${profile.mainSkill}
-- Portfolio: ${profile.portfolio}
-- Projects (LINKS): ${profile.projectLinks.map((project: any) => project).join(', ')}
-                `,
+- Core Skills: ${profile.skills.join(', ')}
+- Primary Expertise: ${profile.mainSkill}
+- Portfolio URL: ${profile.portfolio}
+- Project Evidence: ${profile.projectLinks.map((project: any) => project).join(', ')}
+                `
             }
         ],
         max_tokens: 700,
-        temperature: 0.7,
+        temperature: 0.5,
     });
 
     try {

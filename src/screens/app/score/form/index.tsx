@@ -53,6 +53,11 @@ export default function ScoreForm({ navigation }: any) {
             return
         }
 
+        if(jobDescription.length < 20) {
+            Alert.alert('Profile Analysis', 'Job description should be at least 20 characters long')
+            return
+        }
+
         if (selectedProfile === null) {
             Alert.alert('Profile Analysis', 'Please select your profile')
             return
