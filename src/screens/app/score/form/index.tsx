@@ -134,7 +134,7 @@ export default function ScoreForm({ navigation }: any) {
                                 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     {/* <FontAwesome5 name="user-circle" size={20} color="grey" /> */}
-                                    <Image source={{ uri: user.profileImage }}
+                                    <Image source={{ uri: user?.profileImage || ''}}
                                         style={{
                                             width: 40, height: 40, borderRadius: 20,
                                             borderWidth: 2, borderColor: selectedProfile === index ? 'white' : 'black'

@@ -310,7 +310,7 @@ const CreateCardScreen = ({ navigation }) => {
             </Text>
 
             {projects.map((project, index) => (
-                <View key={index} style={{ marginBottom: 15 }}>
+                <View key={index} style={{ marginBottom: 30 }}>
                     <View
                         style={{
                             marginTop: 0, paddingLeft: 10,
@@ -325,13 +325,13 @@ const CreateCardScreen = ({ navigation }) => {
                             paddingVertical: 5,
                         }}
                     >
-                        <MaterialCommunityIcons name="application" size={20} color="black" style={{ marginRight: 10 }} />
+                        <MaterialCommunityIcons name="web" size={20} color="black" style={{ marginRight: 10 }} />
                         <TextInput
                             style={{
                                 marginTop: 0, fontSize: 14, paddingLeft: 10,
                                 flex: 1,
                             }}
-                            placeholder={'Project Name'}
+                            placeholder={`Project ${index+1} Name`}
                             placeholderTextColor={'gray'}
                             keyboardType={'default'}
                             value={project.name}

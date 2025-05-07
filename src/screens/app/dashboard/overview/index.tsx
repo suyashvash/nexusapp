@@ -153,7 +153,7 @@ const OverviewScreen = ({ navigation }) => {
             contentContainerStyle={{ paddingBottom: 50, justifyContent: 'center', alignItems: 'center' }}
         >
             <View style={styles.container}>
-                <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
+                <Image source={{ uri: user?.profileImage || '' }} style={styles.profileImage} />
                 <Text style={styles.profileName}>{userData.name}</Text>
                 <Text style={styles.profileViews}>{analyticsData.cardViews} Views</Text>
 
