@@ -1,79 +1,112 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# NexusCard App
 
-# Getting Started
+NexusCard is a professional networking app that allows users to create and share digital business cards, analyze profile matches with job descriptions, and generate personalized cold emails.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Table of Contents
 
-## Step 1: Start the Metro Server
+- [Prerequisites](#prerequisites)
+- [Environment Setup](#environment-setup)
+- [Installation](#installation)
+- [Running the App](#running-the-app)
+  - [iOS](#ios)
+  - [Android](#android)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Troubleshooting](#troubleshooting)
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Prerequisites
 
-To start Metro, run the following command from the _root_ of your React Native project:
+Before you begin, ensure you have the following installed:
 
-```bash
-# using npm
-npm start
+- Node.js (v16 or newer)
+- npm (v8 or newer) or Yarn (v1.22 or newer)
+- For iOS:
+  - macOS
+  - Xcode (14.0 or newer)
+  - CocoaPods (1.11 or newer)
+- For Android:
+  - Android Studio
+  - JDK 11
+  - Android SDK Platform 33
 
-# OR using Yarn
-yarn start
-```
+## Environment Setup
 
-## Step 2: Start your Application
+### iOS Setup
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+1. Install Xcode from the Mac App Store
+2. Install CocoaPods:
+   ```bash
+   sudo gem install cocoapods
+   ```
+3. Install Xcode Command Line Tools:
+   ```bash
+   xcode-select --install
+   ```
 
-### For Android
+### Android Setup
 
-```bash
-# using npm
-npm run android
+1. Install Android Studio
+2. Set up the Android SDK
+3. Configure environment variables:
+   - Set ANDROID_HOME to your Android SDK location
+   - Add platform-tools to your PATH
 
-# OR using Yarn
-yarn android
-```
+## Installation
 
-### For iOS
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd nexusapp
+   ```
 
-```bash
-# using npm
-npm run ios
+2. Install dependencies:
+   ```bash
+   npm install
+   # or with yarn
+   yarn install
+   ```
 
-# OR using Yarn
-yarn ios
-```
+3. Install iOS pods (iOS only):
+   ```bash
+   cd ios && pod install && cd ..
+   ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+4. Create a file named `GoogleService-Info.plist` in the `ios` directory with your Firebase iOS configuration.
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+5. Ensure the Firebase configuration in `src/configs/firebase/index.ts` matches your Firebase project.
 
-## Step 3: Modifying your App
+## Running the App
 
-Now that you have successfully run the app, let's modify it.
+### iOS
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+1. Start Metro Bundler:
+   ```bash
+   npx react-native start
+   ```
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+2. In a new terminal, build and run the app:
+   ```bash
+   npx react-native run-ios
+   ```
 
-## Congratulations! :tada:
+   To specify a simulator:
+   ```bash
+   npx react-native run-ios --simulator="iPhone 14 Pro"
+   ```
 
-You've successfully run and modified your React Native App. :partying_face:
+### Android
 
-### Now what?
+1. Start an Android emulator or connect a device
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+2. Start Metro Bundler:
+   ```bash
+   npx react-native start
+   ```
 
-# Troubleshooting
+3. In a new terminal, build and run the app:
+   ```bash
+   npx react-native run-android
+   ```
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Project Structure
 
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
