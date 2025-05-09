@@ -56,10 +56,10 @@ const LoginScreen = ({ navigation }: any) => {
             .then(async(userCredential) => {
 
                 let user = userCredential.user;
-                console.log('User logged in:', user.uid);
+                console.log('User logged in:', user?.uid);
 
 
-                const docRef = doc(db, "Users", user.uid);
+                const docRef = doc(db, "Users", user?.uid);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists) {

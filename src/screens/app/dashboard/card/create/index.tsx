@@ -49,7 +49,7 @@ const CreateCardScreen = ({ navigation }) => {
 
     const getUserData = async () => {
 
-        const docRef = doc(db, "Users", user.id);
+        const docRef = doc(db, "Users", user?.id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists) {
@@ -128,7 +128,7 @@ const CreateCardScreen = ({ navigation }) => {
 
         profiles?.push(card)
 
-        const userRef = doc(db, "Users", user.id);
+        const userRef = doc(db, "Users", user?.id);
         await updateDoc(userRef, {
             profiles: profiles,
         })
@@ -191,7 +191,7 @@ const CreateCardScreen = ({ navigation }) => {
                             <Card
                                 key={index}
                                 bgUrl={theme}
-                                name={userData?.name || user.name}
+                                name={userData?.name || user?.name || ''}
                                 title={mainTitle === '' ? 'Your Title will come here..' : mainTitle}
                                 views={100}
                                 onClick={() => {
@@ -407,7 +407,7 @@ const CreateCardScreen = ({ navigation }) => {
                 <Entypo name="attachment" size={18} color="black" style={{ marginRight: 10 }} />
                 {
                     resume ? (
-                        <Text style={{ color: 'black' }}>{resume.name}</Text>
+                        <Text style={{ color: 'black' }}>{resume?.name || ''}</Text>
                     ) : (
                         <Text>Select File</Text>
                     )

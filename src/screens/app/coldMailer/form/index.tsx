@@ -13,15 +13,20 @@ import { Colors } from "../../../../utils/colors";
 import LottieView from 'lottie-react-native';
 import GeneratingModal from "../../../../components/generatingModal";
 import { generateColdMail } from "../../../../configs/openai";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function ColdMailerForm({ navigation }: any) {
 
     const db = getFirestore()
     const user = useUser()
 
+    const isFocused = useIsFocused()
+
     useEffect(() => {
-        getUserData()
-    }, [])
+        if (isFocused) {
+            getUserData()
+        }
+    }, [isFocused])
 
     const [jobDescription, setJobDescription] = React.useState<string>('');
     const [receiverBio, setReceiverBio] = React.useState<string>('');
@@ -34,7 +39,7 @@ export default function ColdMailerForm({ navigation }: any) {
 
     const getUserData = async () => {
 
-        const docRef = doc(db, "Users", user.id);
+        const docRef = doc(db, "Users", user?.id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists) {
@@ -152,7 +157,7 @@ export default function ColdMailerForm({ navigation }: any) {
                                 }}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     {/* <FontAwesome5 name="user-circle" size={20} color="grey" /> */}
-                                    <Image source={{ uri: user?.profileImage || ''}}
+                                    <Image source={{ uri: user?.profileImage || '' }}
                                         style={{
                                             width: 40, height: 40, borderRadius: 20,
                                             borderWidth: 2, borderColor: profile === index ? 'white' : 'black'

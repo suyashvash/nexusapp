@@ -68,19 +68,19 @@ const SignupScreen = ({ navigation }: any) => {
             .then(async (userCredential) => {
 
                 let user = userCredential.user;
-                console.log('User created:', user.uid);
+                console.log('User created:', user?.uid);
                 // Create user in firestore
 
-                await setDoc(doc(db, 'Users', user.uid), {
+                await setDoc(doc(db, 'Users', user?.uid), {
                     name: name,
                     email: email,
                     password: password,
                     createdAt: new Date(),
                     profiles: [],
-                    id: user.uid,
+                    id: user?.uid,
                 })
                     .then(() => {
-                        console.log('User added to firestore:', user.uid);
+                        console.log('User added to firestore:', user?.uid);
                         Alert.alert('Sign Up', 'User created successfully');
                         setIsLoading(false)
                         navigation.goBack()

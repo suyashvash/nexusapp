@@ -47,8 +47,8 @@ const ProfileScreen = ({ navigation }) => {
                 source={{ uri: user?.profileImage || '' }}
                 style={styles.profileImage}
             />
-            <Text style={styles.name}>{user.name}</Text>
-            <Text style={styles.email}>{user.email}</Text>
+            <Text style={styles.name}>{user?.name}</Text>
+            <Text style={styles.email}>{user?.email}</Text>
 
 
             <PrimaryButton

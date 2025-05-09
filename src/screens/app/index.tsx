@@ -16,10 +16,12 @@ import DashboardNavigator from './dashboard';
 import ColdmailerNavigator from './coldMailer';
 import ScoreNavigator from './score';
 import ProfileScreen from './setting';
+import useUser from '../../redux/useStore';
 
 const Tab = createBottomTabNavigator();
 
-export default function MainApp() {
+export default function MainApp({navigation}:any) {
+
     return (
         <Tab.Navigator
             initialRouteName={Routes.app.dashboard.tag}

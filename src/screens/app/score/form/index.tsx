@@ -13,15 +13,19 @@ import { Colors } from "../../../../utils/colors";
 import LottieView from 'lottie-react-native';
 import GeneratingModal from "../../../../components/generatingModal";
 import { getProfileAnalysis } from "../../../../configs/openai";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function ScoreForm({ navigation }: any) {
 
     const db = getFirestore()
     const user = useUser()
+    const isFocused = useIsFocused()
 
     useEffect(() => {
-        getUserData()
-    }, [])
+        if(isFocused){
+            getUserData()
+        }
+    }, [isFocused])
 
     const [jobDescription, setJobDescription] = React.useState<string>('');
     const [selectedProfile, setProfile] = React.useState<any>(0);
@@ -33,7 +37,7 @@ export default function ScoreForm({ navigation }: any) {
 
     const getUserData = async () => {
 
-        const docRef = doc(db, "Users", user.id);
+        const docRef = doc(db, "Users", user?.id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists) {

@@ -22,7 +22,7 @@ const Card = ({ name, title, views, onClick,style ,bgUrl}: CardProps) => {
         style={[styles.cardContainer,style]} 
         src={ bgUrl || 'https://wallpapershome.com/images/pages/pic_h/26424.jpg'}>
             <Image source={{ uri: user?.profileImage || '' }} style={styles.cardImage} />
-            <Text style={styles.cardName}>{name || user.name}</Text>
+            <Text style={styles.cardName}>{name || user?.name}</Text>
             <Text style={styles.cardTitle}>{title}</Text>
         </ImageBackground>
     </TouchableOpacity>

@@ -39,7 +39,7 @@ const OverviewScreen = ({ navigation }) => {
     const [userData, setUserData] = React.useState<User | null>(null);
 
     const getUserData = async () => {
-        const docRef = doc(db, 'Users', user.id);
+        const docRef = doc(db, 'Users', user?.id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists) {
@@ -62,7 +62,7 @@ const OverviewScreen = ({ navigation }) => {
         try {
             const analyticsRef = collection(db, 'Analytics');
 
-            const docRef = doc(db, 'Users', user.id);
+            const docRef = doc(db, 'Users', user?.id);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists) {

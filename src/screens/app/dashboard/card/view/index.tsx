@@ -23,7 +23,7 @@ const CardDetailScreen = ({ navigation, route }) => {
 
     const getUserData = async () => {
         setIsLoading(true)
-        const docRef = doc(db, "Users", user.id);
+        const docRef = doc(db, "Users", user?.id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists) {
@@ -40,7 +40,7 @@ const CardDetailScreen = ({ navigation, route }) => {
     const onShareCard = () => {
         Share.share({
             message: `Check out my Nexus card to view my professional journey ! \n\n https://nexuscard.web.app?cardId=${thisCard?.id}`,
-            title: `${user.name} - ${thisCard?.title}`,
+            title: `${user?.name || ''} - ${thisCard?.title}`,
             // url: `https://nexuscard.web.app?cardId=${thisCard?.id}`,
         })
             .then((result) => console.log(result))
@@ -61,7 +61,7 @@ const CardDetailScreen = ({ navigation, route }) => {
                     text: "OK",
                     onPress: async () => {
                         setIsLoading(true)
-                        const userRef = doc(db, "Users", user.id);
+                        const userRef = doc(db, "Users", user?.id);
 
                         const newProfiles = userData?.profiles.filter((card: any) => card.id !== id)
 
